@@ -112,3 +112,23 @@ CREATE TABLE IF NOT EXISTS audit_events (
 );
 CREATE OR REPLACE RULE audit_no_update AS ON UPDATE TO audit_events DO INSTEAD NOTHING;
 CREATE OR REPLACE RULE audit_no_delete AS ON DELETE TO audit_events DO INSTEAD NOTHING;
+
+-- Ask the Copilot chat sessions (D45; migration 0003). Not tied to a review: a session can ask about any vendor,
+-- the portfolio, the policies or the system itself. `state` holds what the next turn needs (vendors in focus, last question).
+CREATE TABLE IF NOT EXISTS chat_sessions (
+    id              UUID PRIMARY KEY,
+    owner           TEXT NOT NULL,              -- the API principal's name; sessions are visible to their owner only
+    title           TEXT,
+    state           JSONB,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at      TIMESTAMPTZ
+);
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id              BIGSERIAL PRIMARY KEY,
+    session_id      UUID NOT NULL REFERENCES chat_sessions(id) ON DELETE CASCADE,
+    role            TEXT NOT NULL CHECK (role IN ('user','assistant')),
+    content         JSONB NOT NULL,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS chat_messages_session ON chat_messages (session_id, id);
+CREATE INDEX IF NOT EXISTS chat_sessions_owner ON chat_sessions (owner, updated_at);

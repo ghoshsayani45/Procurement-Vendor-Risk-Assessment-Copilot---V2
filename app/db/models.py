@@ -58,6 +58,27 @@ audit_events = sa.Table(
 )
 
 
+# Ask the Copilot (D45, migration 0003): chat sessions are not tied to a review
+chat_sessions = sa.Table(
+    "chat_sessions", metadata,
+    sa.Column("id", sa.Uuid(as_uuid=False), primary_key=True),
+    sa.Column("owner", sa.Text, nullable=False),
+    sa.Column("title", sa.Text),
+    sa.Column("state", JSONType),
+    sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+    sa.Column("updated_at", sa.DateTime(timezone=True)),
+)
+
+chat_messages = sa.Table(
+    "chat_messages", metadata,
+    sa.Column("id", sa.BigInteger().with_variant(sa.Integer, "sqlite"), primary_key=True, autoincrement=True),
+    sa.Column("session_id", sa.Uuid(as_uuid=False), nullable=False),
+    sa.Column("role", sa.Text, nullable=False),
+    sa.Column("content", JSONType, nullable=False),
+    sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+)
+
+
 def database_url() -> str:
     """SQLAlchemy URL: Postgres from DATABASE_URL when STORE_BACKEND=postgres, else the SQLite store file."""
     if os.getenv("STORE_BACKEND", "sqlite").strip().lower() in ("postgres", "pg"):

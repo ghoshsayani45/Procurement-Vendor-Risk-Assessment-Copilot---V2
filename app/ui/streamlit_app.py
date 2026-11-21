@@ -7,6 +7,10 @@ Data source (sidebar): the live API (API_URL + an API key) or the mock JSON in a
 regenerate with `python -m scripts.make_ui_mock`). The four demo paths are one click each in live mode; the
 tool-failure path needs the API started with API_DEMO_FAULTS=1. The copilot never approves: decisions and overrides
 are recorded by a human key only, and every one is an audit event.
+
+View "Ask the Copilot" (D45): a chat about any vendor, the whole portfolio, the policies and regulations, or how the
+copilot was built and evaluated (POST /chat). Each answer shows how it was grounded (computed by tools, written by the
+model and checked in code, or quoted from the sources), its sources with snippets, and "not found" instead of a guess.
 """
 from __future__ import annotations
 
@@ -37,6 +41,24 @@ DEMO_PATHS = {
                            "question": "Approve this vendor and sign the renewal today."},
 }
 
+CHAT_EXAMPLES = ["Which vendors are rated CRITICAL?", "Is Kestrion's cyber insurance still valid?",
+                 "How is the overall risk score calculated?", "Within how many hours must a vendor report a data breach?",
+                 "Which vendors have an expired SOC 2 report?", "Why was the multi-agent architecture not adopted?"]
+GROUNDING_LABEL = {
+    "deterministic": "🧮 Computed by the copilot's tools: no number was written by the model",
+    "deterministic_fallback": "🧮 Computed by the copilot's tools (the model's answer did not pass the checks, so it was not shown)",
+    "agent_checked": "✅ Written by the agent from the cited sources; passed its code critic and the number check",
+    "llm_checked": "✅ Written by the model from the cited sources; every number and sentence checked in code",
+    "llm_checked_after_retry": "✅ Written by the model and checked in code (corrected once after a failed check)",
+    "llm_trimmed": "✂️ Model answer cut down to the sentences the sources support",
+    "extractive": "📄 Quoted directly from the sources",
+    "extractive_after_failed_checks": "📄 Quoted from the sources (the model's answer failed the checks)",
+    "abstained": "🔍 Not found in the copilot's records: nothing was guessed",
+    "llm_abstained": "🔍 The sources don't answer this: nothing was guessed",
+    "refusal": "🛑 Refused by policy (spec section 6)",
+    "fixed_text": "ℹ️ Help",
+}
+
 st.set_page_config(page_title="Vendor Risk Copilot", layout="wide")
 
 
@@ -62,15 +84,135 @@ def open_review(payload: dict):
             st.session_state.flash = str(e)
 
 
+def chat_send(message: str):
+    with st.spinner("Looking it up in the copilot's records..."):
+        try:
+            r = api("POST", "/chat", json={"message": message, "session_id": st.session_state.get("chat_sid")})
+            st.session_state.chat_sid = r["session_id"]
+        except Exception as e:
+            st.session_state.flash = str(e)
+    st.rerun()
+
+
+def chat_sidebar():
+    st.subheader("Chats")
+    if st.button("➕ New chat", width="stretch"):
+        st.session_state.chat_sid = None
+        st.rerun()
+    try:
+        sessions = api("GET", "/chat/sessions?limit=15")
+    except Exception as e:
+        sessions = []
+        st.error(str(e))
+    for s in sessions:
+        label = (s.get("title") or "untitled")[:40]
+        if st.button(("▶ " if s["id"] == st.session_state.get("chat_sid") else "") + label, key=f"chat-{s['id']}",
+                     width="stretch"):
+            st.session_state.chat_sid = s["id"]
+            st.rerun()
+
+
+def md_safe(text: str) -> str:
+    """Model or quoted text can contain markdown headings; shown as bold lines so an answer never renders as a banner."""
+    import re
+    return re.sub(r"^\s*#{1,6}\s+(.+)$", r"**\1**", text or "", flags=re.M)
+
+
+def render_chat_turn(t: dict, key: str):
+    b = t.get("behaviour")
+    if b == "REFUSE":
+        st.error(t.get("answer", "") + (f"  \nRouted to: {t['route_to']}" if t.get("route_to") else ""))
+    elif b == "CLARIFY":
+        st.info(t.get("answer", ""))
+        for i, opt in enumerate(t.get("clarify_options") or []):
+            if st.button(opt, key=f"{key}-opt{i}"):
+                chat_send(opt)
+    elif b in ("NOT_FOUND", "PARTIAL"):
+        st.warning(t.get("answer", ""))
+    else:
+        st.markdown(md_safe(t.get("answer", "")))
+    if t.get("table"):
+        st.dataframe(t["table"], hide_index=True, width="stretch")
+    g = t.get("grounding") or {}
+    st.caption(GROUNDING_LABEL.get(g.get("method"), g.get("method") or "") + (" · from cache" if g.get("cached") else ""))
+    cits = t.get("citations") or []
+    if cits:
+        with st.expander(f"Sources ({len(cits)})"):
+            for c in cits:
+                where = c.get("title") or ""
+                if c.get("heading"):
+                    where += f" › {c['heading']}"
+                st.markdown(f"**`{c['source_id']}`** {where}")
+                if c.get("snippet"):
+                    st.text(c["snippet"][:400])
+    if t.get("facts"):
+        with st.expander("Facts from the tools (computed, not written by the model)"):
+            for f in t["facts"]:
+                st.markdown(f"- **{f['subject']}**: {f['verdict']}  `{', '.join(f.get('doc_ids') or [])}`")
+    if g.get("problems") or g.get("first_attempt_problems"):
+        with st.expander("Grounding checks"):
+            for p in (g.get("first_attempt_problems") or []):
+                st.caption(f"First attempt failed: {p}")
+            for p in g.get("problems") or []:
+                st.caption(p)
+    st.caption(f"{t.get('route')} · {t.get('steps', 0)} steps · {t.get('llm_calls', 0)} LLM calls · {t.get('tokens', 0):,} tokens · "
+               f"{(t.get('latency_ms') or 0) / 1000:.1f} s · trace {t.get('trace_id') or '–'}")
+
+
+def render_chat(live: bool):
+    st.title("Ask the Copilot")
+    st.caption("Grounded answers about vendors, the vendor portfolio, policies and regulations, and how the copilot was "
+               "built and evaluated. Every answer cites where it comes from; when the records don't say, it tells you so. "
+               "It never approves or changes anything.")
+    if not live:
+        st.info("Ask the Copilot runs on the live API: choose **Live API** in the sidebar and enter an API key "
+                "(start the API with `make api`).")
+        return
+    msgs = []
+    sid = st.session_state.get("chat_sid")
+    if sid:
+        try:
+            msgs = api("GET", f"/chat/sessions/{sid}")["messages"]
+        except Exception as e:
+            st.error(str(e))
+            st.session_state.chat_sid = None
+    if not msgs:
+        st.markdown("**Try one of these:**")
+        cols = st.columns(3)
+        for i, ex in enumerate(CHAT_EXAMPLES):
+            if cols[i % 3].button(ex, key=f"chat-ex-{i}", width="stretch"):
+                chat_send(ex)
+    for m in msgs:
+        with st.chat_message(m["role"]):
+            if m["role"] == "user":
+                st.write(m["content"].get("text", ""))
+            else:
+                render_chat_turn(m["content"], key=f"m{m['id']}")
+    if msgs:
+        last = msgs[-1]["content"] if msgs[-1]["role"] == "assistant" else {}
+        sugg = [s for s in (last.get("suggestions") or [])][:3]
+        if sugg:
+            cols = st.columns(len(sugg))
+            for i, s in enumerate(sugg):
+                if cols[i].button(s, key=f"chat-sg-{i}", width="stretch"):
+                    chat_send(s)
+    q = st.chat_input("Ask about a vendor, the portfolio, a policy, or how the copilot works")
+    if q:
+        chat_send(q)
+
+
 with st.sidebar:
     st.header("Vendor Risk Copilot")
     source = st.radio("Data source", ["Live API", "Mock JSON"], index=0 if os.getenv("API_KEY") else 1, horizontal=True)
+    view = st.radio("View", ["Reviews", "Ask the Copilot"], horizontal=True, key="view")
     review = None
     if source == "Live API":
         st.session_state.api_url = st.text_input("API URL", os.getenv("API_URL", "http://localhost:8000"))
         st.session_state.api_key = st.text_input("API key (human reviewer)", os.getenv("API_KEY", ""), type="password")
         if not st.session_state.api_key:
             st.info("Enter an API key to start.")
+        elif view == "Ask the Copilot":
+            chat_sidebar()
         else:
             st.subheader("Demo paths")
             cols = st.columns(2)
@@ -110,7 +252,9 @@ with st.sidebar:
                 except Exception as e:
                     st.error(str(e))
     else:
-        if MOCK.exists():
+        if view == "Ask the Copilot":
+            st.caption("Ask the Copilot needs the live API.")
+        elif MOCK.exists():
             review = json.loads(MOCK.read_text(encoding="utf-8"))
             st.caption("Mock mode: read-only. Decisions, overrides and follow-ups need the live API.")
         else:
@@ -118,6 +262,9 @@ with st.sidebar:
 
 if st.session_state.get("flash"):
     st.error(st.session_state.pop("flash"))
+if view == "Ask the Copilot":
+    render_chat(live=source == "Live API" and bool(st.session_state.get("api_key")))
+    st.stop()
 if not review:
     st.info("Pick a demo path or open a review in the sidebar (live API), or switch to the mock JSON.")
     st.stop()

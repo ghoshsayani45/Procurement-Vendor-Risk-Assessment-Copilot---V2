@@ -1,5 +1,5 @@
 
-.PHONY: migrate api ui ui-mock test-safety
+.PHONY: migrate api ui ui-mock test-safety chat-eval chat-eval-mock chat-eval-test chat-eval-set test-chat chat-kb
 .PHONY: setup ground-truth policies synthetic ingest corpus eval-set grade retrieval-baseline prompt-baseline prompt-baseline-mock index chunking-experiments retrieval-eval test schemas up down
 
 setup:            ## create venv and install dependencies
@@ -106,3 +106,21 @@ up:               ## Postgres+pgvector, Langfuse (:3000) and the API (:8000) in 
 
 down:
 	docker compose -f docker/docker-compose.yml --env-file .env down
+
+chat-eval-set:    ## D45: verify the frozen chat eval set (rebuild only before its freeze: python -m scripts.build_chat_eval --force)
+	python -m scripts.build_chat_eval --check
+
+chat-eval:        ## D45: Ask the Copilot on chat_eval_v1 dev (course endpoint) -> reports/chat_eval_v1.json + docs/chat_eval.md
+	LLM_CACHE=1 python -m scripts.chat_eval --split dev
+
+chat-eval-test:   ## D45: the held-out chat split, ONCE at the end
+	python -m scripts.chat_eval --split test
+
+chat-eval-mock:   ## D45: offline pipeline check with the stand-in model (numbers meaningless for LLM text; reports/mock/)
+	LLM_BACKEND=mock python -m scripts.chat_eval --split dev
+
+test-chat:        ## D45: chat assistant tests (grounding checks, routing, portfolio vs ground truth, API, UI; fake LLM, offline)
+	python -m pytest -q tests/test_chatbot.py tests/test_chat_api.py tests/test_chat_ui.py
+
+chat-kb:          ## D45: what the chat's documentation knowledge base holds (files, chunks, skipped files)
+	python -m app.chatbot.knowledge

@@ -35,6 +35,7 @@ A Track B capstone (Executive PG Programme in Generative AI and Agentic AI). It 
 | 4.3 Safety regression | Script done: corpus checks, 20 new probes, test suites per threat (`make safety-report`); its first pass found and fixed 4 gaps (D41) | `scripts/safety_report.py`, `docs/safety_report.md` |
 | 4.4 Ablations | Script done: switches for key facts, citation limit, critic, JSON retry, constrained decoding, reranker (`make ablations`) | `scripts/ablations.py`, `docs/ablations.md` |
 | 4.5 Containers and smoke test | **Built**: UI container, PDF export, one-command smoke test (`make smoke`) | `docker/Dockerfile.ui`, `app/ui/report_pdf.py`, `scripts/smoke_test.py` |
+| Ask the Copilot (D45) | **Built**: grounded chat about any vendor, the portfolio, the policies and the system itself; computed answers where tools can compute, code-checked LLM answers elsewhere, quoted sources or "not found" otherwise; sessions persisted; eval set `chat_eval_v1` frozen (56 queries). **Course-endpoint run still to do** (`make chat-eval`) | `app/chatbot/`, `POST /chat`, UI view "Ask the Copilot", `docs/chatbot.md`, `scripts/chat_eval.py` |
 
 ## Quick start
 ```bash
@@ -46,7 +47,8 @@ make corpus                                       # rebuild ground truth, polici
 make test                                         # 276 tests (offline)
 make index STRATEGIES=fixed512_ctx,structure      # load the store (+ Gemini embeddings; resumable)
 make api                                          # API on http://localhost:8000/docs (no Docker needed)
-make ui                                           # Streamlit wireframes (mock JSON or live API)
+make ui                                           # Streamlit UI (mock JSON or live API); View -> "Ask the Copilot" for the chat
+make chat-eval                                    # chat assistant on chat_eval_v1 dev (course endpoint)
 make up                                           # Docker: Postgres+pgvector, Langfuse (:3000), API (:8000)
 ```
 Requires Python 3.11+, `pdftotext` (poppler-utils) and Docker.
@@ -59,7 +61,8 @@ app/
   observability/tracing.py                 Langfuse + local JSONL traces for every tool and LLM call
   safety.py                                injection detection, PII masking, non-evidence document types
   ui/streamlit_app.py, mock_review.json    wireframes: case view, evidence, scorecard, approval
-  agents/                                  Week 3 (empty)
+  agents/                                  agent graph, nodes, planner, critic, key facts, multi-agent variant
+  chatbot/                                 Ask the Copilot (D45): router, portfolio, docs knowledge base, grounding checks
   db/store.py                              document/chunk/embedding/vendor-record store: SQLite or Postgres (step 2.1)
   db/models.py, migrate.py                 SQLAlchemy tables for the API; run Alembic migrations (migrations/)
   db/schema.sql                            vendors, documents, chunks (pgvector + full-text), reviews,

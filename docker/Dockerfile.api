@@ -8,6 +8,9 @@ COPY app ./app
 COPY scripts ./scripts
 COPY migrations ./migrations
 COPY alembic.ini ./
+# Ask the Copilot (D45) answers questions about the system from the project's own documents
+COPY README.md CONTRIBUTING.md ./
+COPY docs ./docs
 COPY docker/api-entrypoint.sh /usr/local/bin/api-entrypoint.sh
 # strip Windows line endings (CRLF) in case the script was saved on Windows; otherwise the container cannot start it
 RUN sed -i 's/\r$//' /usr/local/bin/api-entrypoint.sh && chmod +x /usr/local/bin/api-entrypoint.sh && useradd --create-home --uid 10001 app && chown -R app /app

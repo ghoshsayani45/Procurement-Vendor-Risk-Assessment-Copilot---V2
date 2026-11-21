@@ -7,6 +7,10 @@ Routes
   POST /reviews/{id}/messages        follow-up question; Week 2 answers with retrieved evidence (the agent arrives in Week 3)
   POST /reviews/{id}/decision        HUMAN decision by one of the required approvers; never by the copilot's service key
   GET  /tools, POST /tools/{name}    tool catalogue and direct tool calls (for the UI and debugging)
+  POST /chat                         Ask the Copilot (D45): one grounded chat turn about any vendor, the portfolio, the
+                                     policies or the system itself; starts a session or continues `session_id`
+  GET  /chat/sessions[/{id}]         the caller's chat sessions and their messages
+  GET  /chat/kb                      what the chat's documentation knowledge base holds (files, chunks, retrieval mode)
 
 Security: every route except /health needs X-API-Key. API_KEYS holds human users' keys, COPILOT_API_KEYS the agent's
 service keys (format key or key:name, comma-separated). Service keys cannot record decisions. Requests are rate limited
@@ -216,6 +220,13 @@ class MessageCreate(BaseModel):
     content: str = Field(min_length=1, max_length=2000)
 
 
+class ChatCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    message: str = Field(min_length=1, max_length=2000)
+    session_id: Optional[str] = Field(default=None, pattern=r"^[0-9a-fA-F-]{32,36}$", description="continue this session")
+    as_of: Optional[date] = None
+
+
 class DecisionCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     decision: Literal["APPROVED", "APPROVED_WITH_CONDITIONS", "REJECTED", "ESCALATED", "MORE_INFORMATION_REQUESTED"]
@@ -370,6 +381,74 @@ def post_message(rid: str, body: MessageCreate, request: Request, who: Principal
             content = {"kind": "error", "note": f"retrieval failed: {res.error}"}
         repo.add_turn(rid, "assistant", content)
     return content
+
+
+# ------------------------------------------------------------------ Ask the Copilot (D45)
+CHAT_AUDITED = {"CHAT_REFUSAL", "INJECTION_DETECTED", "CHAT_ERROR", "CHAT_AGENT_ERROR", "MIXED_REQUEST_APPROVAL_DECLINED",
+                "REFUSAL", "REPLAN", "CRITIC_UNRESOLVED", "PARTIAL_RESULT"}
+
+
+def chat_ctx(sid: str, who: Principal) -> ToolContext:
+    """Audit sink for a chat turn: refusals, injection flags and failures are audit events (review_id empty, the session id
+    in the detail). Routine TOOL_CALL events are traced but not audited: a portfolio question reads every vendor."""
+    repo = get_repo()
+
+    def sink(action: str, detail: dict):
+        if action in CHAT_AUDITED:
+            repo.audit(None, "copilot", action, {**detail, "chat_session_id": sid, "on_behalf_of": who.name})
+    return ToolContext(store=get_store(), audit=sink)
+
+
+def _own_session(sid: str, who: Principal) -> dict:
+    s = get_repo().get_chat_session(sid)
+    if s is None:
+        raise HTTPException(404, "chat session not found")
+    if s["owner"] != who.name:
+        raise HTTPException(403, "this chat session belongs to another user")
+    return s
+
+
+@app.post("/chat", status_code=201)
+@limiter.limit(lambda: os.getenv("CHAT_RATE_LIMIT", os.getenv("API_RATE_LIMIT", "60/minute")))
+def chat(body: ChatCreate, request: Request, who: Principal = Depends(principal)):
+    from app.chatbot.engine import ChatSession, ask
+    repo = get_repo()
+    if body.session_id:
+        s = _own_session(body.session_id, who)
+        sid = s["id"]
+    else:
+        sid = repo.create_chat_session(who.name, body.message[:80])
+        s = {"state": {}}
+    session = ChatSession.from_state(sid, s.get("state"))
+    with start_trace("chat.message", input=body.message, user_id=who.name, metadata={"chat_session_id": sid},
+                     session_id=sid) as t:
+        request.state.trace_id = getattr(t, "id", None)
+        repo.add_chat_message(sid, "user", {"text": body.message})
+        turn = ask(body.message, session, ctx=chat_ctx(sid, who), as_of=str(body.as_of or DEFAULT_AS_OF), user=who.name)
+        mid = repo.add_chat_message(sid, "assistant", turn)
+        repo.update_chat_session(sid, session.to_state())
+    return {**turn, "session_id": sid, "message_id": mid}
+
+
+@app.get("/chat/sessions")
+def chat_sessions(request: Request, limit: int = 20, who: Principal = Depends(principal)):
+    return get_repo().list_chat_sessions(who.name, min(max(limit, 1), 100))
+
+
+@app.get("/chat/sessions/{sid}")
+def chat_session(sid: str, request: Request, who: Principal = Depends(principal)):
+    s = _own_session(sid, who)
+    return {**s, "messages": get_repo().chat_messages(sid)}
+
+
+@app.get("/chat/kb")
+def chat_kb(request: Request, who: Principal = Depends(principal)):
+    from collections import Counter
+    from app.chatbot import knowledge
+    kb = knowledge.get_kb(get_store())
+    return {"chunks": len(kb.chunks), "mode": kb.mode, "note": kb.note or None, "skipped_files": list(knowledge.SKIPPED),
+            "skipped_sections_quoting_model_output": len(knowledge.SKIPPED_SECTIONS),
+            "files": dict(Counter(c.doc_id for c in kb.chunks))}
 
 
 @app.post("/reviews/{rid}/override", status_code=201)

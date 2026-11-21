@@ -6,7 +6,7 @@ from datetime import date, datetime, timezone
 
 import sqlalchemy as sa
 
-from app.db.models import audit_events, conversation_turns, make_engine, reviews
+from app.db.models import audit_events, chat_messages, chat_sessions, conversation_turns, make_engine, reviews
 
 
 def _now():
@@ -84,6 +84,43 @@ class Repository:
     def audit_events(self, rid: str) -> list[dict]:
         with self.engine.connect() as c:
             rows = c.execute(sa.select(audit_events).where(audit_events.c.review_id == rid).order_by(audit_events.c.id)).all()
+        return [_row(r) for r in rows]
+
+    # ---- chat sessions (D45)
+    def create_chat_session(self, owner: str, title: str | None = None) -> str:
+        sid = str(uuid.uuid4())
+        with self.engine.begin() as c:
+            c.execute(chat_sessions.insert().values(id=sid, owner=owner, title=(title or "")[:120], state={},
+                                                    created_at=_now(), updated_at=_now()))
+        return sid
+
+    def get_chat_session(self, sid: str) -> dict | None:
+        try:
+            uuid.UUID(sid)
+        except (ValueError, TypeError):
+            return None
+        with self.engine.connect() as c:
+            r = c.execute(sa.select(chat_sessions).where(chat_sessions.c.id == sid)).first()
+        return _row(r) if r else None
+
+    def list_chat_sessions(self, owner: str, limit: int = 20) -> list[dict]:
+        with self.engine.connect() as c:
+            rows = c.execute(sa.select(chat_sessions).where(chat_sessions.c.owner == owner)
+                             .order_by(chat_sessions.c.updated_at.desc()).limit(limit)).all()
+        return [_row(r) for r in rows]
+
+    def update_chat_session(self, sid: str, state: dict) -> None:
+        with self.engine.begin() as c:
+            c.execute(chat_sessions.update().where(chat_sessions.c.id == sid).values(state=state, updated_at=_now()))
+
+    def add_chat_message(self, sid: str, role: str, content: dict) -> int:
+        with self.engine.begin() as c:
+            res = c.execute(chat_messages.insert().values(session_id=sid, role=role, content=content, created_at=_now()))
+        return res.inserted_primary_key[0]
+
+    def chat_messages(self, sid: str) -> list[dict]:
+        with self.engine.connect() as c:
+            rows = c.execute(sa.select(chat_messages).where(chat_messages.c.session_id == sid).order_by(chat_messages.c.id)).all()
         return [_row(r) for r in rows]
 
     def ping(self) -> bool:

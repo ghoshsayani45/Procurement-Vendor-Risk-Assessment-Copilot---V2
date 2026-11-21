@@ -85,8 +85,15 @@ def _done(text, usage):
 
 
 def _mock_agent(tag: str, user: str) -> dict:
-    if tag == "agent.router":
+    if tag in ("agent.router", "agent.chat.router"):
         return {"refuse": False, "category": None}
+    if tag == "agent.chat.answer":               # chat assistant (D45): copies the first long sentence of the first passage
+        ids = re.findall(r"<<<PASSAGE id=(\S+)", user)
+        body = re.findall(r"<<<PASSAGE[^\n]*\n(.*?)<<<END PASSAGE>>>", user, re.S)
+        sent = next((x for b in body[:1] for x in re.split(r"(?<=[.!?])\s+", b) if len(x.split()) > 6), "")
+        return {"answerable": bool(sent), "answer": sent[:400] or "The passages do not say.", "citations": ids[:1]}
+    if tag == "agent.chat.portfolio":
+        return {}
     if tag == "agent.planner":
         q = _field(user, "QUESTION")
         return {"template": "VENDOR_QUESTION" if "VENDOR: V" in user else "POLICY_QUESTION",
