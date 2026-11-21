@@ -1,8 +1,6 @@
 # secrets
 .env
 *.key
-
-# Certificates
 certs/
 
 # raw source documents (~260 MB, third-party licences) - share via Drive/DVC, never commit
@@ -35,3 +33,7 @@ docker/volumes/
 # experiment outputs (raw LLM runs, mock reports)
 runs/
 reports/mock/
+reports/smoke/
+
+# runtime traces (step 2.7)
+observability/traces.jsonl

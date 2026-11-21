@@ -30,6 +30,10 @@ def mock_chat(messages, *, temperature=0.0, json_mode=False, tag=""):
     seed = _h(user + tag + str(temperature))
     usage = dict(prompt_tokens=int(len(allm.split()) * 1.3), completion_tokens=0, total_tokens=0)
 
+    if tag.startswith("agent."):                 # Week 3 agent calls: small schemas, weak but well-formed answers
+        return _done(json.dumps(_mock_agent(tag, user)), usage)
+    if tag.startswith("judge."):                                   # usefulness judge (scripts/benchmark.py): a fixed middling score
+        return _done(json.dumps({"score": 4 if "Sources:" in user else 3, "reason": "mock judge"}), usage)
     if "SUBQUESTIONS" in tag:
         out = json.dumps({"sub_questions": [{"q": "Which vendor and which documents are relevant?", "a": "See context."},
                                             {"q": "What does the policy require?", "a": "See policy excerpt."}]})
@@ -78,3 +82,20 @@ def _done(text, usage):
     usage["completion_tokens"] = int(len(text.split()) * 1.3)
     usage["total_tokens"] = usage["prompt_tokens"] + usage["completion_tokens"]
     return text, usage
+
+
+def _mock_agent(tag: str, user: str) -> dict:
+    if tag == "agent.router":
+        return {"refuse": False, "category": None}
+    if tag == "agent.planner":
+        q = _field(user, "QUESTION")
+        return {"template": "VENDOR_QUESTION" if "VENDOR: V" in user else "POLICY_QUESTION",
+                "search_queries": [q[:200] or "policy"], "need_scorecard": False}
+    if tag == "agent.write.summary":
+        return {"summary": "The assessment above lists the findings and missing evidence; see the scorecard for the band."}
+    if tag == "agent.write.answer":
+        docs = re.findall(r"<<<PASSAGE doc_id=(\S+)", user)
+        body = re.findall(r"<<<PASSAGE[^\n]*\n(.*?)<<<END PASSAGE>>>", user, re.S)
+        sent = next((x for b in body for x in re.split(r"(?<=[.!?])\s+", b) if len(x.split()) > 6), "The documents do not say.")
+        return {"answer": sent[:400], "citations": docs[:1] or ["none"]}
+    return {}

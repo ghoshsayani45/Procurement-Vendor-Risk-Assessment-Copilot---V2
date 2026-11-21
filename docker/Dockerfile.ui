@@ -1,0 +1,15 @@
+# Streamlit UI (Week 4, step 4.5). Talks to the API service over HTTP; holds no data and no model keys.
+FROM python:3.12-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+RUN apt-get update && apt-get install -y --no-install-recommends fonts-dejavu-core curl && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY requirements-ui.txt .
+RUN pip install --no-cache-dir --default-timeout=120 --retries 10 -r requirements-ui.txt
+COPY app/__init__.py ./app/__init__.py
+COPY app/ui ./app/ui
+RUN useradd --create-home --uid 10001 ui && chown -R ui /app
+USER ui
+EXPOSE 8501
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s CMD curl -fs http://localhost:8501/_stcore/health || exit 1
+CMD ["streamlit", "run", "app/ui/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0", \
+     "--server.headless=true", "--browser.gatherUsageStats=false"]

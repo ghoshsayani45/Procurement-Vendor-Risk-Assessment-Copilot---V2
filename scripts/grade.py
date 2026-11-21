@@ -124,8 +124,9 @@ def grade_one(q: dict, resp: dict | None) -> dict:
     return r
 
 
-def grade(preds: dict, split="all"):
-    qs = [q for q in load_eval() if split == "all" or q["split"] == split]
+def grade(preds: dict, split="all", ids=None):
+    """ids: grade only these query ids (smoke runs); otherwise every query of the split (missing = failed)."""
+    qs = [q for q in load_eval() if (split == "all" or q["split"] == split) and (ids is None or q["id"] in ids)]
     results = [grade_one(q, preds.get(q["id"])) for q in qs]
     by = defaultdict(list)
     for x in results:

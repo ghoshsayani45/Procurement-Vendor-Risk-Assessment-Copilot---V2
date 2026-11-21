@@ -1,0 +1,9 @@
+.git
+.venv
+**/__pycache__
+data
+runs
+reports
+observability
+.env
+*.sqlite

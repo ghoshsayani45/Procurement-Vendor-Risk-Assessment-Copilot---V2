@@ -1,4 +1,4 @@
-# Week 1 (data, ground truth, ingestion)
+# data, ground truth, ingestion
 pydantic>=2.7,<3
 pyyaml>=6.0
 pandas>=2.2
@@ -8,20 +8,25 @@ beautifulsoup4>=4.12
 pytest>=8.0
 python-dotenv>=1.0
 
-# LLM / retrieval (Week 1 baselines onwards)
+# LLM / retrieval
 openai>=1.40
+httpx>=0.27
+truststore>=0.9        # use the OS certificate store (fixes CERTIFICATE_VERIFY_FAILED behind antivirus / proxies)
 rank-bm25>=0.2.2
 numpy>=1.26
-sentence-transformers>=3.0   # CPU cross-encoder reranker (Week 2)
+sentence-transformers>=3.0   # CPU cross-encoder reranker 
 
-# Platform (Week 2 onwards)
+# Platform 
 fastapi>=0.111
 uvicorn>=0.30
-sqlalchemy>=2.0
+sqlalchemy>=2.0,<2.1   # 2.1 ships Cython DLLs whose long names break on Windows paths over 260 chars
 psycopg[binary]>=3.1
 pgvector>=0.3
 alembic>=1.13
-langgraph>=0.2
-langfuse>=2.0
-streamlit>=1.36
+langgraph>=1.0,<2            # agent graph (tested with 1.2.20)
+langgraph-checkpoint-sqlite>=3.0,<4   # per-review checkpoints (SQLite file)
+langgraph-checkpoint-postgres>=3.0,<4 # per-review checkpoints with STORE_BACKEND=postgres
+langfuse>=2.50,<3     # v2 SDK matches the Langfuse v2 server in docker-compose
+streamlit>=1.46
+fpdf2>=2.7,<3            # PDF export of the review report (app/ui/report_pdf.py)
 slowapi>=0.1.9

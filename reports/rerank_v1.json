@@ -1,0 +1,865 @@
+{
+ "run_at": "2026-11-13 15:19",
+ "strategy": "fixed512_ctx",
+ "retrieval": "hybrid (bm25 + local_BAAI/bge-small-en-v1.5, RRF) + vendor filter",
+ "queries": 26,
+ "rule": {
+  "quote@5_gain": 0.03,
+  "p95_latency_budget_ms": 1500
+ },
+ "variants": {
+  "none": {
+   "n": 26,
+   "hit@5": 0.923,
+   "recall@5": 0.604,
+   "recall@10": 0.714,
+   "mrr": 0.74,
+   "quote@5": 0.769,
+   "quote@10": 0.769,
+   "latency_median_ms": 117.0,
+   "latency_p95_ms": 511.3,
+   "model": null,
+   "candidates": 0,
+   "by_category": {
+    "full_review": null,
+    "comparison": null,
+    "lookup_vendor": 1.0,
+    "missing_conflicting_evidence": 1.0,
+    "internal_policy": 1.0,
+    "external_regulation": 0.333,
+    "adversarial": 0.0,
+    "refusal": null
+   },
+   "per_query": [
+    {
+     "id": "EVAL-005",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": null,
+     "latency_ms": 812.6
+    },
+    {
+     "id": "EVAL-006",
+     "hit@5": 1,
+     "mrr": 0.333,
+     "quote@5": null,
+     "latency_ms": 511.3
+    },
+    {
+     "id": "EVAL-007",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 124.0
+    },
+    {
+     "id": "EVAL-009",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 137.2
+    },
+    {
+     "id": "EVAL-013",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 299.4
+    },
+    {
+     "id": "EVAL-014",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": null,
+     "latency_ms": 263.2
+    },
+    {
+     "id": "EVAL-018",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": null,
+     "latency_ms": 121.7
+    },
+    {
+     "id": "EVAL-022",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 133.8
+    },
+    {
+     "id": "EVAL-023",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": null,
+     "latency_ms": 113.1
+    },
+    {
+     "id": "EVAL-025",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 112.4
+    },
+    {
+     "id": "EVAL-026",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 98.8
+    },
+    {
+     "id": "EVAL-028",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 116.3
+    },
+    {
+     "id": "EVAL-029",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": 1.0,
+     "latency_ms": 117.0
+    },
+    {
+     "id": "EVAL-035",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 99.3
+    },
+    {
+     "id": "EVAL-039",
+     "hit@5": 1,
+     "mrr": 0.333,
+     "quote@5": null,
+     "latency_ms": 86.1
+    },
+    {
+     "id": "EVAL-042",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 107.7
+    },
+    {
+     "id": "EVAL-044",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 122.3
+    },
+    {
+     "id": "EVAL-047",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": 1.0,
+     "latency_ms": 142.0
+    },
+    {
+     "id": "EVAL-048",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 127.6
+    },
+    {
+     "id": "EVAL-049",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 107.0
+    },
+    {
+     "id": "EVAL-056",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": 1.0,
+     "latency_ms": 121.3
+    },
+    {
+     "id": "EVAL-058",
+     "hit@5": 0,
+     "mrr": 0.077,
+     "quote@5": 0.0,
+     "latency_ms": 105.7
+    },
+    {
+     "id": "EVAL-059",
+     "hit@5": 0,
+     "mrr": 0.0,
+     "quote@5": 0.0,
+     "latency_ms": 87.8
+    },
+    {
+     "id": "EVAL-066",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 0.0,
+     "latency_ms": 108.6
+    },
+    {
+     "id": "EVAL-067",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 106.4
+    },
+    {
+     "id": "EVAL-074",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 88.3
+    }
+   ]
+  },
+  "minilm@12": {
+   "n": 26,
+   "hit@5": 0.923,
+   "recall@5": 0.619,
+   "recall@10": 0.727,
+   "mrr": 0.804,
+   "quote@5": 0.692,
+   "quote@10": 0.769,
+   "latency_median_ms": 2252.9,
+   "latency_p95_ms": 10457.9,
+   "model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+   "candidates": 12,
+   "by_category": {
+    "full_review": null,
+    "comparison": null,
+    "lookup_vendor": 0.8,
+    "missing_conflicting_evidence": 1.0,
+    "internal_policy": 1.0,
+    "external_regulation": 0.333,
+    "adversarial": 0.0,
+    "refusal": null
+   },
+   "per_query": [
+    {
+     "id": "EVAL-005",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2199.2
+    },
+    {
+     "id": "EVAL-006",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2169.6
+    },
+    {
+     "id": "EVAL-007",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 10457.9
+    },
+    {
+     "id": "EVAL-009",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 3991.9
+    },
+    {
+     "id": "EVAL-013",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 3916.6
+    },
+    {
+     "id": "EVAL-014",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 5135.5
+    },
+    {
+     "id": "EVAL-018",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": null,
+     "latency_ms": 7783.6
+    },
+    {
+     "id": "EVAL-022",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": null,
+     "latency_ms": 3117.0
+    },
+    {
+     "id": "EVAL-023",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 6626.1
+    },
+    {
+     "id": "EVAL-025",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 4945.1
+    },
+    {
+     "id": "EVAL-026",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 14086.5
+    },
+    {
+     "id": "EVAL-028",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 0.0,
+     "latency_ms": 4555.1
+    },
+    {
+     "id": "EVAL-029",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": 1.0,
+     "latency_ms": 2502.4
+    },
+    {
+     "id": "EVAL-035",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 2088.2
+    },
+    {
+     "id": "EVAL-039",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2263.8
+    },
+    {
+     "id": "EVAL-042",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 2070.4
+    },
+    {
+     "id": "EVAL-044",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2252.9
+    },
+    {
+     "id": "EVAL-047",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": 1.0,
+     "latency_ms": 2128.0
+    },
+    {
+     "id": "EVAL-048",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": 1.0,
+     "latency_ms": 2107.4
+    },
+    {
+     "id": "EVAL-049",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 2219.4
+    },
+    {
+     "id": "EVAL-056",
+     "hit@5": 1,
+     "mrr": 0.333,
+     "quote@5": 1.0,
+     "latency_ms": 2131.9
+    },
+    {
+     "id": "EVAL-058",
+     "hit@5": 0,
+     "mrr": 0.077,
+     "quote@5": 0.0,
+     "latency_ms": 1950.5
+    },
+    {
+     "id": "EVAL-059",
+     "hit@5": 0,
+     "mrr": 0.0,
+     "quote@5": 0.0,
+     "latency_ms": 1905.9
+    },
+    {
+     "id": "EVAL-066",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 0.0,
+     "latency_ms": 2074.5
+    },
+    {
+     "id": "EVAL-067",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2195.0
+    },
+    {
+     "id": "EVAL-074",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2017.9
+    }
+   ],
+   "checks": {
+    "quote@5": false,
+    "hit@5": true,
+    "mrr": true,
+    "latency": false
+   }
+  },
+  "minilm@20": {
+   "n": 26,
+   "hit@5": 0.923,
+   "recall@5": 0.624,
+   "recall@10": 0.73,
+   "mrr": 0.819,
+   "quote@5": 0.692,
+   "quote@10": 0.769,
+   "latency_median_ms": 2994.8,
+   "latency_p95_ms": 3490.4,
+   "model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+   "candidates": 20,
+   "by_category": {
+    "full_review": null,
+    "comparison": null,
+    "lookup_vendor": 0.8,
+    "missing_conflicting_evidence": 1.0,
+    "internal_policy": 1.0,
+    "external_regulation": 0.333,
+    "adversarial": 0.0,
+    "refusal": null
+   },
+   "per_query": [
+    {
+     "id": "EVAL-005",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2994.8
+    },
+    {
+     "id": "EVAL-006",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2934.0
+    },
+    {
+     "id": "EVAL-007",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2700.9
+    },
+    {
+     "id": "EVAL-009",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2697.1
+    },
+    {
+     "id": "EVAL-013",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2746.4
+    },
+    {
+     "id": "EVAL-014",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 3884.9
+    },
+    {
+     "id": "EVAL-018",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": null,
+     "latency_ms": 3025.8
+    },
+    {
+     "id": "EVAL-022",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2802.9
+    },
+    {
+     "id": "EVAL-023",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2847.5
+    },
+    {
+     "id": "EVAL-025",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 3134.2
+    },
+    {
+     "id": "EVAL-026",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 3046.8
+    },
+    {
+     "id": "EVAL-028",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 0.0,
+     "latency_ms": 2966.6
+    },
+    {
+     "id": "EVAL-029",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": 1.0,
+     "latency_ms": 3151.6
+    },
+    {
+     "id": "EVAL-035",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 2896.0
+    },
+    {
+     "id": "EVAL-039",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2823.9
+    },
+    {
+     "id": "EVAL-042",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 2789.0
+    },
+    {
+     "id": "EVAL-044",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2958.1
+    },
+    {
+     "id": "EVAL-047",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": 1.0,
+     "latency_ms": 3490.4
+    },
+    {
+     "id": "EVAL-048",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": 1.0,
+     "latency_ms": 3299.1
+    },
+    {
+     "id": "EVAL-049",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 3260.9
+    },
+    {
+     "id": "EVAL-056",
+     "hit@5": 1,
+     "mrr": 0.25,
+     "quote@5": 1.0,
+     "latency_ms": 3280.4
+    },
+    {
+     "id": "EVAL-058",
+     "hit@5": 0,
+     "mrr": 0.053,
+     "quote@5": 0.0,
+     "latency_ms": 3190.3
+    },
+    {
+     "id": "EVAL-059",
+     "hit@5": 0,
+     "mrr": 0.0,
+     "quote@5": 0.0,
+     "latency_ms": 3006.7
+    },
+    {
+     "id": "EVAL-066",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 0.0,
+     "latency_ms": 2848.2
+    },
+    {
+     "id": "EVAL-067",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 2886.4
+    },
+    {
+     "id": "EVAL-074",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 3399.9
+    }
+   ],
+   "checks": {
+    "quote@5": false,
+    "hit@5": true,
+    "mrr": true,
+    "latency": false
+   }
+  },
+  "bge-base@12": {
+   "n": 26,
+   "hit@5": 0.885,
+   "recall@5": 0.602,
+   "recall@10": 0.729,
+   "mrr": 0.771,
+   "quote@5": 0.692,
+   "quote@10": 0.769,
+   "latency_median_ms": 11418.0,
+   "latency_p95_ms": 13658.0,
+   "model": "BAAI/bge-reranker-base",
+   "candidates": 12,
+   "by_category": {
+    "full_review": null,
+    "comparison": null,
+    "lookup_vendor": 1.0,
+    "missing_conflicting_evidence": 1.0,
+    "internal_policy": 1.0,
+    "external_regulation": 0.0,
+    "adversarial": 0.0,
+    "refusal": null
+   },
+   "per_query": [
+    {
+     "id": "EVAL-005",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 12258.2
+    },
+    {
+     "id": "EVAL-006",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 11061.8
+    },
+    {
+     "id": "EVAL-007",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 10495.7
+    },
+    {
+     "id": "EVAL-009",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 12288.3
+    },
+    {
+     "id": "EVAL-013",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 59183.7
+    },
+    {
+     "id": "EVAL-014",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": null,
+     "latency_ms": 13081.7
+    },
+    {
+     "id": "EVAL-018",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": null,
+     "latency_ms": 10188.1
+    },
+    {
+     "id": "EVAL-022",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": null,
+     "latency_ms": 6865.8
+    },
+    {
+     "id": "EVAL-023",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": null,
+     "latency_ms": 13056.2
+    },
+    {
+     "id": "EVAL-025",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 12080.2
+    },
+    {
+     "id": "EVAL-026",
+     "hit@5": 1,
+     "mrr": 0.5,
+     "quote@5": 1.0,
+     "latency_ms": 10444.5
+    },
+    {
+     "id": "EVAL-028",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 11418.0
+    },
+    {
+     "id": "EVAL-029",
+     "hit@5": 1,
+     "mrr": 0.333,
+     "quote@5": 1.0,
+     "latency_ms": 11377.3
+    },
+    {
+     "id": "EVAL-035",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 9367.5
+    },
+    {
+     "id": "EVAL-039",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 11359.8
+    },
+    {
+     "id": "EVAL-042",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 11463.6
+    },
+    {
+     "id": "EVAL-044",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 12617.7
+    },
+    {
+     "id": "EVAL-047",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 10778.5
+    },
+    {
+     "id": "EVAL-048",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 10816.7
+    },
+    {
+     "id": "EVAL-049",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 1.0,
+     "latency_ms": 11047.4
+    },
+    {
+     "id": "EVAL-056",
+     "hit@5": 0,
+     "mrr": 0.143,
+     "quote@5": 0.0,
+     "latency_ms": 11004.9
+    },
+    {
+     "id": "EVAL-058",
+     "hit@5": 0,
+     "mrr": 0.077,
+     "quote@5": 0.0,
+     "latency_ms": 11070.1
+    },
+    {
+     "id": "EVAL-059",
+     "hit@5": 0,
+     "mrr": 0.0,
+     "quote@5": 0.0,
+     "latency_ms": 13266.7
+    },
+    {
+     "id": "EVAL-066",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": 0.0,
+     "latency_ms": 12127.1
+    },
+    {
+     "id": "EVAL-067",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 13184.8
+    },
+    {
+     "id": "EVAL-074",
+     "hit@5": 1,
+     "mrr": 1.0,
+     "quote@5": null,
+     "latency_ms": 13658.0
+    }
+   ],
+   "checks": {
+    "quote@5": false,
+    "hit@5": false,
+    "mrr": true,
+    "latency": false
+   }
+  }
+ },
+ "verdict": {
+  "adopt": null,
+  "env": {
+   "RERANK_BACKEND": "none"
+  },
+  "reason": "no variant meets the adoption rule: keep the reranker off (see the failed checks per variant)"
+ }
+}

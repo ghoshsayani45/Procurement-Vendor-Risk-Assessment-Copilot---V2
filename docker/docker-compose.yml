@@ -1,5 +1,5 @@
-# Day 0 skeleton. api / ui services are enabled in Week 2-3 once their code exists.
-# Usage: make up   (reads ../.env)
+# Week 2: Postgres + pgvector, Langfuse (tracing UI on :3000) and the API (:8000). The UI joins in Week 3.
+# Usage: make up   (reads ../.env; `docker compose ... up -d --build` after code changes)
 name: pvrc
 
 services:
@@ -36,16 +36,32 @@ services:
       SALT: change-me
     ports: ["3000:3000"]
 
-  # api:
-  #   build: {context: .., dockerfile: docker/Dockerfile.api}
-  #   env_file: ../.env
-  #   depends_on: {db: {condition: service_healthy}}
-  #   ports: ["8000:8000"]
-  # ui:
-  #   build: {context: .., dockerfile: docker/Dockerfile.ui}
-  #   env_file: ../.env
-  #   depends_on: [api]
-  #   ports: ["8501:8501"]
+  api:
+    build: {context: .., dockerfile: docker/Dockerfile.api}
+    env_file: ../.env
+    environment:                       # container-specific values override .env
+      STORE_BACKEND: postgres
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      LANGFUSE_HOST: http://langfuse:3000
+      RERANK_BACKEND: none             # decision D38: off (and no PyTorch in the image)
+      API_DEMO_FAULTS: ${API_DEMO_FAULTS:-0}   # 1 = the UI's tool-failure demo path may inject one failing tool
+      MIGRATE_ON_START: "0"            # the entrypoint already migrated
+      TRACE_LOG_PATH: /app/observability/traces.jsonl
+    volumes:
+      - ../data:/app/data              # corpus_v1.jsonl, manifests, ground truth, embeddings cache
+      - ../observability:/app/observability
+      - ../certs:/app/certs:ro         # course CA certificates: LLM_CA_BUNDLE / EMBED_CA_BUNDLE=certs/<file> work here too
+    depends_on:
+      db: {condition: service_healthy}
+    ports: ["8000:8000"]
+
+  ui:                                  # Week 4 (4.5): the Streamlit UI, talking to the api service
+    build: {context: .., dockerfile: docker/Dockerfile.ui}
+    environment:                       # only what the UI needs; it never sees model or database credentials
+      API_URL: http://api:8000
+      API_KEY: ${API_KEY:-}
+    depends_on: [api]
+    ports: ["8501:8501"]
 
 volumes:
   pgdata:

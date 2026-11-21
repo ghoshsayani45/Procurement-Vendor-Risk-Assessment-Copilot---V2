@@ -8,13 +8,21 @@
           "type": "string"
         },
         "tier": {
-          "enum": [
-            1,
-            2,
-            3
+          "anyOf": [
+            {
+              "enum": [
+                1,
+                2,
+                3
+              ],
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
           ],
-          "title": "Tier",
-          "type": "integer"
+          "default": null,
+          "title": "Tier"
         },
         "overall": {
           "title": "Overall",
@@ -40,11 +48,8 @@
       },
       "required": [
         "vendor_id",
-        "tier",
         "overall",
-        "band",
-        "dimension_points",
-        "key_findings"
+        "band"
       ],
       "title": "ComparisonRow",
       "type": "object"

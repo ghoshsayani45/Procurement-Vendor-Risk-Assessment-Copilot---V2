@@ -1,4 +1,4 @@
-"""Step 1.7: classify how the model fails, query by query.
+"""classify how the model fails, query by query.
 
 Labels (a query can have several):
   CALL_ERROR              the API call itself failed (network, auth, server) - an infrastructure problem, not a model failure
