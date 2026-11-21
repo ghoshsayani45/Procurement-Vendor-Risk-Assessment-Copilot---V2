@@ -1,4 +1,4 @@
-"""the five agent nodes plus finalize.
+"""Week 3 (3.1-3.6): the five agent nodes plus finalize.
 
   validate  rules first (refusals, vendor resolution, clarify cases), LLM router only for unclear QUESTION requests
   plan      a template with a deterministic default plan; the LLM only fills slots (search queries) for questions
@@ -21,7 +21,7 @@ from app.agents.glossary import EXTERNAL_DOC_TYPES, expand_for, named_sources, o
 from app.agents.key_facts import key_facts
 from app.agents import prompts, rules
 from app.agents.llm import BudgetExceeded, call_json, check_budget
-from app.agents.state import (MAX_STEPS, AgentPlan, PlannerOutput, RouteDecision, ToolCall, WriterAnswer, WriterSummary, log)
+from app.agents.state import (MAX_STEPS, MULTI_MAX_STEPS, AgentPlan, PlannerOutput, RouteDecision, ToolCall, WriterAnswer, WriterSummary, log)
 from app.llm_client import ContextTooLong
 from app.safety import NON_EVIDENCE_TYPES, redact_pii
 from app.schemas import Answer, Clarification, ComparisonResult, Refusal, Report
@@ -81,7 +81,8 @@ def call_tool(state: dict, upd: dict, tool: str, args: dict) -> dict:
              "error": f"injected fault: {fault.split(':', 1)[-1]}"}
     else:
         res = run_tool(tool, args, ctx())
-        if not res.ok and (res.error or "").startswith("timed out") and upd.get("steps", state.get("steps", 0)) < MAX_STEPS:
+        cap = MULTI_MAX_STEPS if state.get("arch") == "multi" else MAX_STEPS
+        if not res.ok and (res.error or "").startswith("timed out") and upd.get("steps", state.get("steps", 0)) < cap:
             # every tool is read-only, so one retry after a timeout is safe; it costs a step and is counted
             upd["steps"] = upd.get("steps", state.get("steps", 0)) + 1
             st = upd.setdefault("json_stats", dict(state.get("json_stats") or {}))
@@ -484,7 +485,8 @@ def write(state: dict) -> dict:
     out = None
     for n in (6, 4, 2, 0):                       # shrink the context until the prompt fits the window
         citable = _citable(state, passages[:n], key)
-        msgs = prompts.question_messages(question, as_of, facts, passages, n, key=key, named=named, citable=citable)
+        msgs = prompts.question_messages(question, as_of, facts, passages, n, key=key, named=named, citable=citable,
+                                         handoffs=state.get("handoffs") if state.get("arch") == "multi" else None)
         if feedback:
             msgs[-1]["content"] += "\nYour previous answer had these problems; fix them: " + "; ".join(feedback)[:400]
         try:
@@ -536,7 +538,9 @@ def scrub_labels(text: str) -> str:
 def _citable(state: dict, shown: list[dict], key: list[dict]) -> list[str]:
     """Doc ids the answer may cite: the passages in the prompt, the key facts' sources, then the rest of what the agent
     retrieved (record documents, tool and rule sources). Capped so the schema stays small."""
-    ids = [p["doc_id"] for p in shown] + [d for k in key for d in k["doc_ids"]] + list(_sources(state))
+    ids = ([p["doc_id"] for p in shown] + [d for k in key for d in k["doc_ids"]]
+           + [d for h in (state.get("handoffs") or []) for f in h.get("findings", []) for d in f.get("doc_ids", [])]
+           + list(_sources(state)))
     allowed = set(_sources(state)) | {p["doc_id"] for p in shown}
     return [d for d in dict.fromkeys(ids) if d in allowed][:40]
 

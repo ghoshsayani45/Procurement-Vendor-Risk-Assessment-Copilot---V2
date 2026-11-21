@@ -1,4 +1,4 @@
-"""FastAPI skeleton. Run: uvicorn app.api.main:app --reload   (docs at http://localhost:8000/docs)
+"""FastAPI skeleton (step 2.6). Run: uvicorn app.api.main:app --reload   (docs at http://localhost:8000/docs)
 
 Routes
   GET  /health                       liveness + database + store + retrieval mode (no key needed)
@@ -111,6 +111,7 @@ def demo_faults_enabled() -> bool:
 
 
 def agent_turn(st: dict) -> dict:
+    from app.agents.state import max_steps
     """What an assistant turn stores: the output, the passages shown as evidence, the plan and the cost."""
     return {"kind": "answer", "output": st["output"], "behaviour": st["output"].get("behaviour"),
             "passages": [{k: p.get(k) for k in ("doc_id", "title", "vendor_id", "evidence_type", "document_date", "status",
@@ -122,7 +123,12 @@ def agent_turn(st: dict) -> dict:
             "template": (st.get("plan") or {}).get("template"), "route": st.get("route"),
             "partial_reasons": list(dict.fromkeys(st.get("partial_reasons") or [])), "critic": st.get("critic"),
             "nodes": [{k: t.get(k) for k in ("node", "step", "route", "template", "ok", "problems", "error") if t.get(k) is not None}
-                      for t in st.get("trace") or []]}
+                      for t in st.get("trace") or []],
+            # multi-agent graph (D44): who ran, what each specialist handed over, the verifier's verdict
+            "arch": st.get("arch", "single"), "step_cap": max_steps(st),
+            "agents": (st.get("supervisor") or {}).get("tasks") if st.get("arch") == "multi" else None,
+            "handoffs": st.get("handoffs") if st.get("arch") == "multi" else None,
+            "verifier": st.get("verifier") if st.get("arch") == "multi" else None}
 
 
 def get_repo() -> Repository:

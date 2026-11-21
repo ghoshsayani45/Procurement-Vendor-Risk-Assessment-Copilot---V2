@@ -1,4 +1,4 @@
-"""the reliability layer around every LLM call the agent makes.
+"""Week 3 (3.3): the reliability layer around every LLM call the agent makes.
 
 call_json(state, messages, model) -> (parsed model instance or None, state updates)
   1. constrained decoding when LLM_CONSTRAINED is set (the schema goes to the endpoint),
@@ -18,7 +18,7 @@ import re
 from pydantic import BaseModel, ValidationError
 
 from app import llm_client
-from app.agents.state import MAX_STEPS, token_cap
+from app.agents.state import MAX_STEPS, MULTI_MAX_STEPS, token_cap
 
 
 class BudgetExceeded(RuntimeError):
@@ -70,8 +70,9 @@ def _account(state: dict, upd: dict):
 def check_budget(state: dict, upd: dict, estimate: int):
     steps = upd.get("steps", state.get("steps", 0))
     tokens = upd.get("tokens", state.get("tokens", 0))
-    if steps + 1 > MAX_STEPS:
-        raise BudgetExceeded(f"step cap reached ({MAX_STEPS} steps)")
+    limit = MULTI_MAX_STEPS if state.get("arch") == "multi" else MAX_STEPS
+    if steps + 1 > limit:
+        raise BudgetExceeded(f"step cap reached ({limit} steps)")
     cap = token_cap(state)
     if tokens + estimate > cap:
         raise BudgetExceeded(f"token budget reached ({tokens:,} used, next call ~{estimate:,}, cap {cap:,})")

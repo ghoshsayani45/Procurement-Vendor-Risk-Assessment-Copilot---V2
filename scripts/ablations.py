@@ -35,6 +35,7 @@ CONFIGS: dict[str, tuple[str, dict]] = {
     "no_critic": ("Without the code critic and its replan (D34)", {"AGENT_CRITIC": "0"}),
     "no_json_retry": ("Without JSON repair and retry (D32)", {"AGENT_JSON_RETRY": "0"}),
     "no_constrained": ("Without constrained decoding: JSON mode only (D32)", {"LLM_CONSTRAINED": ""}),
+    "multi_agent": ("Multi-agent architecture: supervisor, 3 specialists, verifier (D44)", {"AGENT_ARCH": "multi"}),
     "with_reranker": ("With the MiniLM reranker on the top 12 (D38)", {"RERANK_BACKEND": "cross_encoder", "RERANK_MODEL": "minilm",
                                                                        "RERANK_CANDIDATES": "12"}),
 }

@@ -91,6 +91,24 @@ def _mock_agent(tag: str, user: str) -> dict:
         q = _field(user, "QUESTION")
         return {"template": "VENDOR_QUESTION" if "VENDOR: V" in user else "POLICY_QUESTION",
                 "search_queries": [q[:200] or "policy"], "need_scorecard": False}
+    if tag == "agent.supervisor":
+        q = _field(user, "QUESTION")
+        tasks = [{"agent": "evidence", "task": q[:200] or "check the evidence"}] if "VENDOR: V" in user else []
+        if re.search(r"polic|standard|rule|regulat|act\b|gfr|dpdp", q, re.I) or not tasks:
+            tasks.append({"agent": "policy", "task": q[:200] or "find the rule"})
+        if re.search(r"risk|band|score|approv|financ", q, re.I) and "VENDOR: V" in user:
+            tasks.append({"agent": "risk", "task": "report the scorecard"})
+        return {"tasks": tasks}
+    if tag == "agent.evidence.act":
+        return {"actions": [{"tool": "vendor_record", "query": ""}, {"tool": "compliance_checker", "query": ""},
+                            {"tool": "document_search", "query": (_field(user, "TASK") or "evidence")[:200]}]}
+    if tag == "agent.policy.act":
+        return {"searches": [{"query": (_field(user, "TASK") or "policy")[:200], "scope": "any"}]}
+    if tag.endswith(".report"):
+        ids = re.findall(r"<<<PASSAGE doc_id=(\S+)", user) or [d.strip() for d in _field(user, "DOC IDS YOU MAY CITE").split(",") if d.strip()]
+        return {"findings": [{"statement": "The documents cover part of the task.", "doc_ids": ids[:1]}] if ids else [], "complete": bool(ids)}
+    if tag == "agent.verifier":
+        return {"consistent": True, "problem": None}
     if tag == "agent.write.summary":
         return {"summary": "The assessment above lists the findings and missing evidence; see the scorecard for the band."}
     if tag == "agent.write.answer":

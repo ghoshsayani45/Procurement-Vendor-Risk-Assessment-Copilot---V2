@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 from collections import defaultdict
 from datetime import date
@@ -18,12 +19,25 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EVAL = ROOT / "data/evaluation/eval_v1.jsonl"
+EVAL_DIR = ROOT / "data/evaluation"
 MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 BAND_ORDER = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
 
 
+def eval_path() -> Path:
+    """EVAL_FILE picks the set (a file name in data/evaluation, e.g. eval_v2.jsonl); unset = eval_v1."""
+    name = os.getenv("EVAL_FILE", "").strip()
+    return EVAL_DIR / name if name else EVAL
+
+
+def eval_tag() -> str:
+    """'v1' for eval_v1, 'v2' for eval_v2.jsonl: used to keep each set's reports apart."""
+    stem = eval_path().stem
+    return stem.split("_", 1)[1] if stem.startswith("eval_") else stem
+
+
 def load_eval():
-    return [json.loads(l) for l in open(EVAL, encoding="utf-8")]
+    return [json.loads(l) for l in open(eval_path(), encoding="utf-8")]
 
 
 def _date_alts(s):

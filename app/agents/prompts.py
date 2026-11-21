@@ -96,9 +96,10 @@ def vendor_facts(record: dict | None, compliance: dict | None, risk: dict | None
 
 def question_messages(question: str, as_of: str, facts: dict, passages: list[dict], n_passages: int,
                       key: list[dict] | None = None, named: list[str] | None = None,
-                      citable: list[str] | None = None) -> list[dict]:
+                      citable: list[str] | None = None, handoffs: list[dict] | None = None) -> list[dict]:
     """key = verdict lines picked by code for this question (key_facts.py); named = sources the question names;
-    citable = the doc ids the answer may cite (the same list constrains the JSON schema when the endpoint enforces it)."""
+    citable = the doc ids the answer may cite (the same list constrains the JSON schema when the endpoint enforces it);
+    handoffs = the specialists' findings (multi-agent graph only, D44; None leaves the single agent's prompt unchanged)."""
     parts = [f"AS_OF: {as_of}", f"QUESTION: {question}"]
     if key:
         parts.append("KEY_FACTS (picked by code for this question from the tool results; they are correct):\n"
@@ -109,6 +110,12 @@ def question_messages(question: str, as_of: str, facts: dict, passages: list[dic
     parts.append("FACTS (computed by tools from the vendor records; each item names its doc_id):\n"
                  + (json.dumps(facts, ensure_ascii=False, default=str, separators=(',', ':')) if facts else "(none)"))
     parts.append(f"PASSAGES:\n{passages_block(passages, n_passages)}")
+    if handoffs:
+        lines = [f"- {h['agent']} agent: {f['statement']} [doc_ids: {', '.join(f.get('doc_ids') or []) or 'none'}]"
+                 for h in handoffs for f in h.get("findings", [])]
+        if lines:
+            parts.append("SPECIALIST FINDINGS (written by the evidence, policy and risk agents from the same tool results; "
+                         "where they disagree with KEY_FACTS or FACTS, those win):\n" + "\n".join(lines[:12]))
     if citable:
         parts.append("CITABLE DOC IDS (cite only these): " + ", ".join(citable))
     rules = ["Answer the QUESTION in at most 120 words, with the specific values (dates, numbers, names)."]

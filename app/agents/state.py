@@ -1,4 +1,4 @@
-"""the agent's state and plan schemas. Frozen interfaces: the UI, API, safety tests and eval build on these.
+"""Week 3 (3.1): the agent's state and plan schemas. Frozen interfaces: the UI, API, safety tests and eval build on these.
 
 ReviewState is a plain dict (LangGraph TypedDict state). Every node reads it and returns the keys it changes.
 The final answer is `state["output"]`: one of the Week 1 output schemas (Report, ComparisonResult, Answer,
@@ -93,9 +93,26 @@ class ReviewState(TypedDict, total=False):
     errors: list[str]
     trace: list[dict]                # node-by-node log for the UI's plan view and the failure taxonomy
     trace_id: Optional[str]
+    # multi-agent architecture only (AGENT_ARCH=multi, D44); absent or unused in the single agent
+    arch: str                        # "single" (default) or "multi"
+    supervisor: dict                 # SupervisorPlan: which specialists run, with what task
+    handoffs: list[dict]             # one Handoff per specialist that ran
+    verifier: dict                   # VerifierVerdict on the draft answer
 
 
 MAX_STEPS = int(os.getenv("AGENT_MAX_STEPS", "10"))
+# the multi-agent architecture makes more calls by design (a supervisor, specialists, a verifier): its own caps (D44)
+MULTI_MAX_STEPS = int(os.getenv("AGENT_MULTI_MAX_STEPS", "20"))
+MULTI_TOKENS = int(os.getenv("AGENT_MULTI_TOKENS", "30000"))
+
+
+def arch() -> str:
+    """AGENT_ARCH=multi selects the multi-agent graph (D44); anything else is the single agent."""
+    return "multi" if os.getenv("AGENT_ARCH", "single").strip().lower() == "multi" else "single"
+
+
+def max_steps(state: dict) -> int:
+    return MULTI_MAX_STEPS if state.get("arch") == "multi" else MAX_STEPS
 TOKEN_CAPS = {"FULL_REVIEW": int(os.getenv("AGENT_TOKENS_FULL_REVIEW", "22000")),
               "COMPARISON": int(os.getenv("AGENT_TOKENS_QUESTION", "15000")),
               "QUESTION": int(os.getenv("AGENT_TOKENS_QUESTION", "15000")),
@@ -105,11 +122,13 @@ TOKEN_CAPS = {"FULL_REVIEW": int(os.getenv("AGENT_TOKENS_FULL_REVIEW", "22000"))
 def token_cap(state: dict) -> int:
     if state.get("route") == "REFUSE":
         return TOKEN_CAPS["REFUSE"]
+    if state.get("arch") == "multi":
+        return MULTI_TOKENS
     return TOKEN_CAPS.get(state["request"].get("request_kind", "QUESTION"), TOKEN_CAPS["QUESTION"])
 
 
 def new_state(request: dict, review_id: str = "", history: list | None = None, tool_cache: dict | None = None) -> dict:
-    return ReviewState(review_id=review_id, request=dict(request), history=history or [], tool_results=[], passages=[],
+    return ReviewState(review_id=review_id, request=dict(request), arch=arch(), history=history or [], tool_results=[], passages=[],
                        tool_cache=dict(tool_cache or {}), steps=0, llm_calls=0, tokens=0, partial_reasons=[], errors=[],
                        trace=[], replanned=False, json_stats={"calls": 0, "constrained": 0, "first_try": 0, "repaired": 0,
                                                               "retried": 0, "retry_succeeded": 0, "defaulted": 0})

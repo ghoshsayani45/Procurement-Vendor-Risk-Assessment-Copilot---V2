@@ -1,4 +1,4 @@
-"""Vendor Risk Copilot UI: submit a case, watch the agent's plan, check the evidence, read the scorecard,
+"""Vendor Risk Copilot UI (step 3.7, M4): submit a case, watch the agent's plan, check the evidence, read the scorecard,
 override the band with a reason, record the human decision, export the report.
 
     streamlit run app/ui/streamlit_app.py
@@ -222,7 +222,8 @@ with plan_tab:
         m2.metric("LLM calls", c.get("llm_calls"))
         m3.metric("Tokens", f"{c.get('tokens') or 0:,}")
         m4.metric("Latency", f"{(c.get('latency_ms') or 0) / 1000:.1f} s")
-        st.progress(min(1.0, (c.get("steps") or 0) / 10), text=f"{c.get('steps')} of 10 steps")
+        cap = c.get("step_cap") or 10
+        st.progress(min(1.0, (c.get("steps") or 0) / cap), text=f"{c.get('steps')} of {cap} steps")
         seen = [x.get("node") for x in c.get("nodes", [])]
         path = []
         for x in c.get("nodes", []):
@@ -235,6 +236,15 @@ with plan_tab:
         for x in c.get("nodes", []):
             if x.get("problems"):
                 st.warning(f"Critic ({x['node']}): " + "; ".join(x["problems"]))
+        if c.get("arch") == "multi" and c.get("agents"):            # D44: the specialists and what each handed over
+            with st.expander(f"Multi-agent: {', '.join(t['agent'] for t in c['agents'])}"):
+                for h in c.get("handoffs") or []:
+                    st.markdown(f"**{h['agent']} agent** — task: {h.get('task', '')}")
+                    for f in h.get("findings", []):
+                        st.markdown(f"- {f['statement']} `{', '.join(f.get('doc_ids') or []) or 'no doc ids'}`")
+                v = c.get("verifier") or {}
+                if "consistent" in v:
+                    st.caption("Verifier: " + ("consistent" if v["consistent"] else f"sent back: {v.get('problem')}"))
         st.dataframe([{"#": i + 1, "tool": p["tool"],
                        "arguments": json.dumps(p["arguments"], ensure_ascii=False)[:120],
                        "result": "♻️ reused" if p.get("cached") else ("✅ ok" if p["ok"] else f"❌ {p.get('error')}")}

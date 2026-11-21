@@ -5,6 +5,8 @@ and the four-class failure taxonomy.
     python -m scripts.agent_eval --split dev               # full dev run: reports/agent_eval_v1.json + docs/agent_eval.md
     python -m scripts.agent_eval --split test              # ONCE, at the Week 3 gate (D12); merged into the same report
     python -m scripts.agent_eval --ids EVAL-007,EVAL-069   # specific queries (smoke)
+    EVAL_FILE=eval_v2.jsonl AGENT_ARCH=multi python -m scripts.agent_eval --split test   # another set / architecture (D44):
+                                                           # reports/agent_eval_v2_multi.json + docs/agent_eval_v2_multi.md
     FAULT_INJECT=document_search:timeout python -m scripts.agent_eval --ids EVAL-025   # tool-failure path
 
 Metrics (template section V): end-to-end accuracy, task completion rate, average tool calls per task, tokens (cost)
@@ -24,12 +26,12 @@ from dotenv import load_dotenv
 
 from app import llm_client
 from app.agents.graph import run_agent
-from app.agents.state import MAX_STEPS, token_cap
+from app.agents.state import MAX_STEPS, arch, max_steps, token_cap
 from app.agents.taxonomy import CLASSES, primary_class
 from app.failure_analysis import classify
 from app.retrieval.chunking import ROOT
 from app.tools.base import ToolContext
-from scripts.grade import grade, load_eval
+from scripts.grade import eval_tag, grade, load_eval
 
 load_dotenv()
 WEEK1_DEV = {   # Week 1 single-prompt baselines on dev (docs/baselines.md): few-shot / CoT-SC / decomposition
@@ -62,6 +64,8 @@ def warm_up():
 def run_one(q: dict) -> dict:
     req = dict(q["request"])
     req["as_of"] = str(req.get("as_of") or "2026-11-01")
+    from app.retrieval.retrievers import DENSE_FALLBACKS
+    fb0 = len(DENSE_FALLBACKS)
     t0 = time.time()
     try:
         st = run_agent(req, review_id="", ctx=ToolContext())
@@ -81,13 +85,15 @@ def run_one(q: dict) -> dict:
                 replanned=bool(st.get("replanned")), critic_problems_unresolved=critic.get("problems", []) if not critic.get("ok") else [],
                 partial_reasons=st.get("partial_reasons", []), available_docs=sorted(available),
                 trace=[{k: v for k, v in t.items() if k in ("node", "route", "template", "kind", "ok", "problems")} for t in st.get("trace", [])],
-                trace_id=st.get("trace_id"), token_cap=token_cap(st) if st.get("request") else None)
+                trace_id=st.get("trace_id"), token_cap=token_cap(st) if st.get("request") else None,
+                arch=st.get("arch", "single"), step_cap=max_steps(st),
+                dense_fallbacks=len(DENSE_FALLBACKS) - fb0)
 
 
 def completed(run: dict) -> bool:
     """Task completion (template V): a complete answer, a correct-shape refusal or a clarification, within the limits."""
     o = run.get("output")
-    return bool(o) and not run.get("crashed") and o.get("behaviour") != "PARTIAL" and run["steps"] <= MAX_STEPS and \
+    return bool(o) and not run.get("crashed") and o.get("behaviour") != "PARTIAL" and run["steps"] <= run.get("step_cap", MAX_STEPS) and \
         (run.get("token_cap") is None or run["tokens"] <= run["token_cap"])
 
 
@@ -131,8 +137,10 @@ def evaluate(qs: list[dict], runs: list[dict], split_label: str) -> dict:
         avg_tool_calls_by_kind={k: round(sum(v) / len(v), 2) for k, v in calls_by_kind.items()},
         tokens_median=int(statistics.median(toks)) if toks else 0, tokens_p95=pct(toks, 95), tokens_total=sum(toks),
         latency_p50_ms=pct(lat, 50), latency_p95_ms=pct(lat, 95),
-        within_step_cap=round(sum(r.get("steps", 0) <= MAX_STEPS for r in runs) / n, 3) if n else None,
+        within_step_cap=round(sum(r.get("steps", 0) <= r.get("step_cap", MAX_STEPS) for r in runs) / n, 3) if n else None,
         max_steps=max((r.get("steps", 0) for r in runs), default=0), replans=sum(r["replanned"] for r in rows),
+        dense_fallbacks=sum(r.get("dense_fallbacks", 0) for r in runs),
+        tool_retries=sum((r.get("json_stats") or {}).get("tool_retries", 0) for r in runs),
         llm_calls_total=sum(r.get("llm_calls", 0) for r in runs), cached_llm_calls=sum(r.get("cached_llm_calls", 0) for r in runs),
         queries_with_estimated_cache=sum(r.get("cached_estimated", False) for r in runs),
         tokens_median_answered=int(statistics.median([t for t in toks if t])) if any(toks) else 0,
@@ -208,7 +216,9 @@ def main(argv=None):
     mock = llm_client.backend() == "mock"
     out_dir = ROOT / "reports" / ("mock" if mock else "smoke" if smoke else "")
     out_dir.mkdir(parents=True, exist_ok=True)
-    rep_path = out_dir / ("agent_eval_smoke.json" if smoke else "agent_eval_v1.json")
+    # one report per eval set and architecture: eval_v1 + single keeps its old name (agent_eval_v1.json, docs/agent_eval.md)
+    suffix = f"{eval_tag()}" + ("_multi" if arch() == "multi" else "")
+    rep_path = out_dir / ("agent_eval_smoke.json" if smoke else f"agent_eval_{suffix}.json")
     warm_up()
     runs = []
     for i, q in enumerate(qs, 1):
@@ -222,6 +232,7 @@ def main(argv=None):
     res["run_at"] = time.strftime("%Y-%m-%d %H:%M")
     model = "mock" if mock else os.getenv("LLM_MODEL", "?")
     report = {"model": model, "backend": llm_client.backend(), "constrained": os.getenv("LLM_CONSTRAINED", ""),
+              "eval_set": eval_tag(), "arch": arch(),
               "retrieval": f"{os.getenv('RETRIEVAL_STRATEGY', 'fixed512_ctx')} / {os.getenv('RETRIEVAL_MODE', 'auto')} / "
                            f"rerank {os.getenv('RERANK_BACKEND', 'cross_encoder')}"
                            + ("" if os.getenv("RERANK_BACKEND", "cross_encoder") in ("none", "off", "0") else
@@ -235,12 +246,16 @@ def main(argv=None):
             pass
     report["splits"][res["metrics"]["split"]] = res
     rep_path.write_text(json.dumps(report, indent=1, ensure_ascii=False, default=str), encoding="utf-8", newline="\n")
-    doc = (out_dir / "agent_eval.md") if (smoke or mock) else ROOT / "docs" / "agent_eval.md"
+    doc = (out_dir / "agent_eval.md") if (smoke or mock) else ROOT / "docs" / (
+        "agent_eval.md" if suffix == "v1" else f"agent_eval_{suffix}.md")
     write_markdown(report, doc)
     m = res["metrics"]
     print(f"\naccuracy {m['accuracy']} | completion {m['task_completion_rate']} | tool calls/task {m['avg_tool_calls_per_task']} | "
           f"tokens median {m['tokens_median']:,} (model-calling queries {m['tokens_median_answered']:,}) | latency p50 {(m['latency_p50_ms'] or 0) / 1000:.1f}s p95 {(m['latency_p95_ms'] or 0) / 1000:.1f}s")
     print("failure taxonomy:", m["failure_taxonomy"])
+    if m["dense_fallbacks"] or m["tool_retries"]:
+        print(f"infrastructure: {m['dense_fallbacks']} search(es) fell back to BM25 (embeddings endpoint slow or down), "
+              f"{m['tool_retries']} timed-out tool call(s) retried")
     if m["cached_llm_calls"]:
         print(f"cache: {m['cached_llm_calls']}/{m['llm_calls_total']} LLM calls replayed (original tokens/latency counted"
               + (f"; {m['queries_with_estimated_cache']} queries from old cache files: tokens estimated, latency unknown)"

@@ -10,7 +10,8 @@ def _isolate_observability(tmp_path, monkeypatch):
     # load_dotenv never overrides a variable that exists, so a value set here wins over the developer's .env
     for var, safe in {"LANGFUSE_PUBLIC_KEY": "", "LANGFUSE_SECRET_KEY": "", "LLM_CONSTRAINED": "", "FAULT_INJECT": "",
                       "API_DEMO_FAULTS": "0", "API_KEY": "", "LLM_CACHE_SALT": "", "AGENT_KEY_FACTS": "1",
-                      "AGENT_CITATION_ENUM": "1", "AGENT_CRITIC": "1", "AGENT_JSON_RETRY": "1"}.items():
+                      "AGENT_CITATION_ENUM": "1", "AGENT_CRITIC": "1", "AGENT_JSON_RETRY": "1",
+                      "AGENT_ARCH": "single", "EVAL_FILE": ""}.items():     # D44: .env may select multi or eval_v2
         monkeypatch.setenv(var, safe)
     monkeypatch.setenv("LLM_CACHE", "0")              # .env may turn the response cache on for eval runs; tests never use it
     import app.observability.tracing as tr
