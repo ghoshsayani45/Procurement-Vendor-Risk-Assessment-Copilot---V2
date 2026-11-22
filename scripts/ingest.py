@@ -1,4 +1,4 @@
-"""Step 1.4c: build corpus v1 = real sources (per the source register) + synthetic documents.
+"""build corpus v1 = real sources (per the source register) + synthetic documents.
 
     python -m scripts.ingest
 

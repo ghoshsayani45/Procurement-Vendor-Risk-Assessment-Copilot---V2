@@ -1,4 +1,4 @@
-# Step 1.7: How the small model breaks (failure log)
+# How the small model breaks (failure log)
 
 > **Generated file: do not edit.** It is rewritten after every full run of `scripts/prompt_baseline.py`.
 > Write team observations in `docs/failure_notes.md`, which the script never touches.

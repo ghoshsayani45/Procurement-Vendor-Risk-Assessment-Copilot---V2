@@ -1,4 +1,4 @@
-"""Step 1.5: build and validate eval_v1, the 80-query evaluation set.
+"""build and validate eval_v1, the 80-query evaluation set.
 
     python -m scripts.build_eval_set            # writes data/evaluation/eval_v1.jsonl (+ .sha256)
 

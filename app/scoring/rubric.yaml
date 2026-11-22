@@ -1,4 +1,4 @@
-# Vendor risk scoring rubric v1.0 (Week 1, step 1.2)
+# Vendor risk scoring rubric v1.0
 # Deterministic: same vendor facts + same as_of date => same score, always.
 # Every number here is a design decision; change it only through docs/decisions.md.
 

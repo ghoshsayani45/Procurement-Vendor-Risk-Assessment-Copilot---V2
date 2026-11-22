@@ -1,4 +1,4 @@
-"""Step 2.7: safety test suite. Each test maps to a threat in docs/threat_model.md (T1-T8).
+"""safety test suite. Each test maps to a threat in docs/threat_model.md (T1-T8).
 
 Built from eval_v1's adversarial and injection queries and the planted adversarial documents. Week 2 tests the
 deterministic controls (tools, filters, detectors, API); Week 3 adds the agent's refusals and answers to the same suite.

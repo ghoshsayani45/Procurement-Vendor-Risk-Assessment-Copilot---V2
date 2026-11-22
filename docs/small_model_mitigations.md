@@ -1,4 +1,4 @@
-# Small-model mitigations (Week 3, template section on ≤8B models)
+# Small-model mitigations
 
 The copilot runs on Qwen3-8B with an 8,192-token context and a 1,024-token answer cap. This page lists each limitation of the model, what the code does about it, and the measurement that shows whether it worked. **The numbers are filled in from `docs/agent_eval.md` after `make agent-eval`.** Owner: M2, with M5 for the numbers.
 

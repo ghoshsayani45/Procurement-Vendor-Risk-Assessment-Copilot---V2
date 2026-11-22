@@ -1,4 +1,4 @@
-"""Step 2.1: load corpus v1 into the document/chunk store (idempotent, versioned).
+"""load corpus v1 into the document/chunk store (idempotent, versioned).
 
     python -m scripts.index_corpus                                   # sqlite store, strategy from RETRIEVAL_STRATEGY (structure)
     python -m scripts.index_corpus --strategies fixed512,fixed512_ctx,structure,small2big

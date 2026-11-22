@@ -1,4 +1,4 @@
-"""Week 4 (4.1): benchmark statistics (agreement with people, run-to-run spread) and the cache salt."""
+"""benchmark statistics (agreement with people, run-to-run spread) and the cache salt."""
 from scripts.benchmark import agreement, summarise
 
 

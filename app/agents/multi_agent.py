@@ -1,4 +1,4 @@
-"""Multi-agent architecture (D44), selected with AGENT_ARCH=multi. The single agent (graph.build_graph default) is unchanged.
+"""Multi-agent architecture, selected with AGENT_ARCH=multi. The single agent (graph.build_graph default) is unchanged.
 
     validate -> supervisor -> evidence agent -> policy agent -> risk agent -> writer -> verifier -> critic -> finalize
                                                                                ^-------- one rewrite --------'

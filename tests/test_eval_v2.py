@@ -1,4 +1,4 @@
-"""eval_v2 (D44): frozen before the multi-agent work, well-formed, consistent with the ground truth, and gradable."""
+"""eval_v2 : frozen before the multi-agent work, well-formed, consistent with the ground truth, and gradable."""
 import hashlib
 import json
 from collections import Counter

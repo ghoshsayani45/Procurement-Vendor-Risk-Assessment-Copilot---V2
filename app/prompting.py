@@ -1,4 +1,4 @@
-"""Step 1.6: single-agent, single-prompt baselines (no tools, no retrieval: gold passages are pasted in).
+"""single-agent, single-prompt baselines (no tools, no retrieval: gold passages are pasted in).
 
 Three strategies, as the Track B template requires:
   structured_fewshot   structured JSON output with few-shot examples (temperature 0, one call)

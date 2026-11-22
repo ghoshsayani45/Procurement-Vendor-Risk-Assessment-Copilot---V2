@@ -1,4 +1,4 @@
-"""Step 2.2: chunking experiments. Compare chunking strategies on retrieval alone (no generator).
+"""chunking experiments. Compare chunking strategies on retrieval alone (no generator).
 
     python -m scripts.chunking_experiments                          # BM25 only: runs anywhere, no model download
     python -m scripts.chunking_experiments --retrievers bm25,dense,hybrid --strategies fixed512_ctx,structure

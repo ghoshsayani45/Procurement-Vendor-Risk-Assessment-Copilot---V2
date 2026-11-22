@@ -1,4 +1,4 @@
-"""Week 4 (4.1): the full benchmark. Repeated dev runs for variance, the solution document's targets, a usefulness judge
+"""the full benchmark. Repeated dev runs for variance, the solution document's targets, a usefulness judge
 with a fixed rubric, and a 20-answer human check that calibrates the judge.
 
     python -m scripts.benchmark run --repeats 3          # 3 dev runs (run 1 reuses the cache, runs 2-3 make fresh calls)

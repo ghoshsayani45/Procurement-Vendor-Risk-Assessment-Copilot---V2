@@ -1,4 +1,4 @@
-"""D45: the Streamlit 'Ask the Copilot' view, with the API faked at the HTTP layer (no backend needed)."""
+"""the Streamlit 'Ask the Copilot' view, with the API faked at the HTTP layer (no backend needed)."""
 from __future__ import annotations
 
 import pytest

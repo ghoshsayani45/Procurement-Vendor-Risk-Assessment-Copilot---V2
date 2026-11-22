@@ -1,4 +1,4 @@
-"""Week 1 guards: the rubric engine is deterministic and the frozen ground truth still matches it.
+"""the rubric engine is deterministic and the frozen ground truth still matches it.
 
 Run: python -m pytest -q   (from repo root)
 If a rubric change breaks these tests, the change must be logged in docs/decisions.md and the

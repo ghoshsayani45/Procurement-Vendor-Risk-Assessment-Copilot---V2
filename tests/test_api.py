@@ -1,4 +1,4 @@
-"""Step 2.6: API skeleton on a real (temporary) SQLite database migrated with Alembic and loaded with corpus v1.
+"""API skeleton on a real (temporary) SQLite database migrated with Alembic and loaded with corpus v1.
 Set PVRC_TEST_DATABASE_URL=postgresql://... to run the same tests against an empty Postgres database instead."""
 from __future__ import annotations
 

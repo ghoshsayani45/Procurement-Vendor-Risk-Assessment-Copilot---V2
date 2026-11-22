@@ -1,4 +1,4 @@
-"""Grade copilot predictions against eval_v1 (used from step 1.6 onwards).
+"""Grade copilot predictions against eval_v1 
 
     python -m scripts.grade predictions.jsonl [--split dev|test|all] [--out report.json]
 

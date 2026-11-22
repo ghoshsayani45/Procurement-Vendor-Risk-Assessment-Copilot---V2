@@ -1,4 +1,4 @@
-"""Write app/ui/mock_review.json: a review the UI renders without a running API (steps 2.7 and 3.7, M4).
+"""Write app/ui/mock_review.json: a review the UI renders without a running API
 
     python -m scripts.make_ui_mock                 # stand-in model: free, offline; answers are placeholder text
     python -m scripts.make_ui_mock --live          # your configured model (LLM_* in .env): realistic text, costs tokens

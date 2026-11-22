@@ -1,4 +1,4 @@
-"""Chunking strategies (Week 1 baseline + Week 2 step 2.2 experiments).
+"""Chunking strategies
 
     fixed512        naive baseline (step 1.8): ~512-token word windows, 64-token overlap, no title, no structure
     fixed512_ctx    the same windows, each prefixed with a contextual header "[title | section]" (isolates the header's effect)

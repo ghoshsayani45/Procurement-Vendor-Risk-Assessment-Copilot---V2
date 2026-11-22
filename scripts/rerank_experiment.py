@@ -1,4 +1,4 @@
-"""Decision 9: does a cross-encoder reranker earn its CPU cost? Dev split only (D12).
+"""does a cross-encoder reranker earn its CPU cost? Dev split only (D12).
 
     python -m scripts.rerank_experiment                                  # none, minilm@12, minilm@20, bge-base@12
     python -m scripts.rerank_experiment --variants none,minilm@12         # a subset

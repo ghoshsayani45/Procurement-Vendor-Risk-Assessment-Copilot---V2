@@ -1,4 +1,4 @@
-"""Step 2.4: retrieval measured on its own: BM25 vs dense vs hybrid vs hybrid + reranker (+ vendor filter).
+"""retrieval measured on its own: BM25 vs dense vs hybrid vs hybrid + reranker (+ vendor filter).
 
     python -m scripts.retrieval_eval                         # all configurations (Gemini embeddings + local reranker)
     python -m scripts.retrieval_eval --configs bm25,bm25_filter   # offline subset

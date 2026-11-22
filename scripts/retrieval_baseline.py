@@ -1,4 +1,4 @@
-"""Step 1.8: retrieval baselines, measured separately from answer quality.
+"""retrieval baselines, measured separately from answer quality.
 
     python -m scripts.retrieval_baseline                         # BM25 only (no endpoint needed)
     python -m scripts.retrieval_baseline --retrievers bm25,dense # needs the embeddings endpoint (or EMBED_BACKEND=local)

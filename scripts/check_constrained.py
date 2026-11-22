@@ -1,4 +1,4 @@
-"""Day-1 check (Week 3): does the course endpoint support constrained decoding (schema-valid JSON by construction)?
+"""does the course endpoint support constrained decoding (schema-valid JSON by construction)?
 
     python -m scripts.check_constrained
 

@@ -1,4 +1,4 @@
-"""Steps 1.6 + 1.7: run the three prompting strategies on eval_v1 (dev split by default), grade them, classify failures.
+"""run the three prompting strategies on eval_v1 (dev split by default), grade them, classify failures.
 
     python -m scripts.prompt_baseline                                  # all 3 strategies, dev split, course endpoint
     python -m scripts.prompt_baseline --strategies structured_fewshot --limit 5   # quick smoke run

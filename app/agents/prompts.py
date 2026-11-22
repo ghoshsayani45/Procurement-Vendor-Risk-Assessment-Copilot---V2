@@ -1,4 +1,4 @@
-"""Week 3 (3.4, 3.6): prompts for the agent's three small LLM jobs, and the data blocks they read.
+"""Prompts for the agent's three small LLM jobs, and the data blocks they read.
 
 Small-model rules applied here (from the Week 1 failure log):
   * one task per call, short system prompt, the answer shape stated LAST;

@@ -1,4 +1,4 @@
-"""Document / chunk store (step 2.1). One interface, two backends:
+"""Document / chunk store. One interface, two backends:
 
     STORE_BACKEND=sqlite    (default) a single file, data/processed/store.sqlite. No Docker needed.
     STORE_BACKEND=postgres  Postgres + pgvector from `make up` (POSTGRES_* in .env); schema in app/db/schema.sql.

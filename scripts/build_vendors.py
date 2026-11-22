@@ -1,4 +1,4 @@
-"""Build the 35 synthetic vendors and their ground truth (Week 1, step 1.3).
+"""Build the 35 synthetic vendors and their ground truth 
 
     python -m scripts.build_vendors          (run from repo root)
 

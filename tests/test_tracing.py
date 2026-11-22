@@ -1,4 +1,4 @@
-"""Step 2.7: tracing of LLM and tool calls (local JSONL sink always; Langfuse sink checked with a fake SDK client)."""
+"""tracing of LLM and tool calls (local JSONL sink always; Langfuse sink checked with a fake SDK client)."""
 from __future__ import annotations
 
 import pytest

@@ -1,4 +1,4 @@
-"""D45: the chat API on a real (temporary) SQLite database migrated with Alembic (0003) and loaded with corpus v1.
+"""the chat API on a real (temporary) SQLite database migrated with Alembic (0003) and loaded with corpus v1.
 Uses the offline stand-in model (LLM_BACKEND=mock): the routes, persistence, ownership, audit and grounding fields are
 what is tested, not the wording of LLM answers."""
 from __future__ import annotations

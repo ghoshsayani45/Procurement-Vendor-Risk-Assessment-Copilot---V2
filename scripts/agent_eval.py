@@ -1,4 +1,4 @@
-"""Week 3 (3.8, 3.9): run the agent over eval_v1, grade it with the Week 1 grader, report the template's section V metrics
+"""run the agent over eval_v1, grade it with the Week 1 grader, report the template's section V metrics
 and the four-class failure taxonomy.
 
     python -m scripts.agent_eval --limit 10                # daily smoke run (dev): reports/smoke/

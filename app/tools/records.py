@@ -1,4 +1,4 @@
-"""Vendor records: the structured system of record the tools read (decision D24).
+"""Vendor records: the structured system of record the tools read.
 
 In a real procurement team these live in the vendor-management system: which certificates are on file with their dates,
 the signed contract terms and amendments, financial statements received, SLA performance, debarment and conflict-of-

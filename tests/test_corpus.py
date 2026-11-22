@@ -1,4 +1,4 @@
-"""Step 1.4 guards: policies match the rubric, synthetic documents state their facts, corpus v1 is in range."""
+"""policies match the rubric, synthetic documents state their facts, corpus v1 is in range."""
 import csv
 import json
 from pathlib import Path

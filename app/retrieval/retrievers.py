@@ -1,4 +1,4 @@
-"""Retrievers: BM25 (sparse), dense (embeddings), hybrid (reciprocal rank fusion) and a cross-encoder reranker (step 2.3).
+"""Retrievers: BM25 (sparse), dense (embeddings), hybrid (reciprocal rank fusion) and a cross-encoder reranker.
 
 Every retriever searches *index chunks* and returns ranked (chunk, score) pairs. Metadata filters (vendor, access class,
 status, slice) are applied BEFORE ranking, as a mask over the index, so a filtered-out chunk can never be returned.

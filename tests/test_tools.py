@@ -1,4 +1,4 @@
-"""Step 2.5: the five tools, checked against the Week 1 ground truth (all 35 vendors) and the eval set."""
+"""the five tools, checked against the Week 1 ground truth (all 35 vendors) and the eval set."""
 from __future__ import annotations
 
 import json

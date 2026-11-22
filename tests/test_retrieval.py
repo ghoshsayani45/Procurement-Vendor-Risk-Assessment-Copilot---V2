@@ -1,4 +1,4 @@
-"""Week 2 steps 2.1-2.4: chunking, store (idempotent ingestion), filters, hybrid fusion, passages, metrics.
+"""chunking, store (idempotent ingestion), filters, hybrid fusion, passages, metrics.
 All offline: the hash embedder and a fake reranker stand in for the real models."""
 from __future__ import annotations
 

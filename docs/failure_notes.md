@@ -1,4 +1,4 @@
-# Step 1.7: Team notes on model failures
+# Team notes on model failures
 
 Hand-written; `scripts/prompt_baseline.py` never overwrites this file. The generated counts and examples are in `docs/failure_log.md`. Model: Qwen3-8B (course endpoint), eval_v1 dev split, gold documents in the prompt.
 

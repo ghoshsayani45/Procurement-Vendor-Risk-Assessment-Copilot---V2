@@ -1,4 +1,4 @@
-"""Week 4 (4.4): what each component contributes. Runs the agent on the dev split once per configuration, each with one
+"""what each component contributes. Runs the agent on the dev split once per configuration, each with one
 component switched off (or the reranker switched on), and writes the ablation table.
 
     python -m scripts.ablations --list                      # configurations and what they change

@@ -1,4 +1,4 @@
-"""Week 3 (3.3): the reliability layer around every LLM call the agent makes.
+"""the reliability layer around every LLM call the agent makes.
 
 call_json(state, messages, model) -> (parsed model instance or None, state updates)
   1. constrained decoding when LLM_CONSTRAINED is set (the schema goes to the endpoint),

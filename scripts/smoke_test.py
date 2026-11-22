@@ -1,4 +1,4 @@
-"""One-command smoke test of a running stack (Week 4, step 4.5): the API, the agent, the UI and the safety boundary.
+"""One-command smoke test of a running stack : the API, the agent, the UI and the safety boundary.
 
     python -m scripts.smoke_test                       # API_URL (default http://localhost:8000), API_KEY from .env
     python -m scripts.smoke_test --ui http://localhost:8501 --no-fault

@@ -1,4 +1,4 @@
-"""Step 1.4 exit check: can plain BM25 find the right document for obvious queries?
+"""exit check: can plain BM25 find the right document for obvious queries?
 
     python -m scripts.retrieval_smoke_test
 

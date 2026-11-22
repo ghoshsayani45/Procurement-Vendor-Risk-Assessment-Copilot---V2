@@ -11,7 +11,7 @@ Recorded before any agent code, as the Week 1 gate requires. Re-run any section 
 
 Before the real run, check the pipeline offline with `make prompt-baseline-mock`. It uses a deliberately weak stand-in model; its numbers mean nothing and go to `reports/mock/` only.
 
-## Step 1.6: Prompting baseline (single agent, single prompt, gold passages pasted in)
+## Prompting baseline (single agent, single prompt, gold passages pasted in)
 
 Model `Qwen/Qwen3-8B` · eval_v1 **dev** split · context = gold documents (retrieval not tested here).
 Runs: `structured_fewshot` 2026-11-08 00:30 (30 queries); `cot_sc` 2026-11-08 00:39 (30 queries); `decomposition` 2026-11-08 13:05 (30 queries).
@@ -106,7 +106,7 @@ The model reads individual facts well. It breaks down when it has to apply many 
 - **Test split untouched:** its 50 queries are reserved for the Week 3 and Week 4 gates.
 
 
-## Step 1.8: Retrieval baselines
+## Retrieval baselines
 
 Run 2026-11-03 09:44 on corpus v1 (1053 documents → 5663 fixed 512-token chunks, 64-token overlap). Document-level metrics on eval_v1 queries that have gold documents; the query is the user's raw question (no rewriting).
 
@@ -152,7 +152,7 @@ Not run: embeddings endpoint not configured: set EMBED_BASE_URL / EMBED_MODEL in
 - Low recall on vendor questions usually means the right vendor's documents are outranked by look-alike documents from other vendors (all synthetic vendors share templates). Metadata filtering by `vendor_id` (Week 2) is the expected fix.
 - The worst queries for each retriever are listed under `worst_queries` in `reports/retrieval_baseline_v1.json`.
 
-## Step 1.8: Key observations (team notes)
+## Key observations (team notes)
 
 1. **BM25 is a strong start on vendor-specific questions.** hit@10 is 1.0 for lookups, full reviews and internal policy, because vendor names are rare tokens that pin the right documents.
 2. **Primary sources lose to documents that restate them.** All four external-regulation misses at hit@10 follow this pattern:

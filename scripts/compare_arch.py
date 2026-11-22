@@ -1,4 +1,4 @@
-"""D44: single agent vs multi-agent on eval_v2, once each, judged by an adoption rule fixed before the run.
+"""single agent vs multi-agent on eval_v2, once each, judged by an adoption rule fixed before the run.
 
     python -m scripts.compare_arch                      # both architectures on eval_v2 (45 queries each)
     python -m scripts.compare_arch --archs multi        # one architecture; the other's earlier result is kept

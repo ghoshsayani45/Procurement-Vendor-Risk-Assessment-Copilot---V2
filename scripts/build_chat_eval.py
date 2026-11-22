@@ -1,4 +1,4 @@
-"""Build the chatbot's evaluation set (D45): data/evaluation/chat_eval_v1.jsonl + its SHA-256.
+"""Build the chatbot's evaluation set : data/evaluation/chat_eval_v1.jsonl + its SHA-256.
 
     python -m scripts.build_chat_eval            # writes the file once; refuses to overwrite a frozen set
     python -m scripts.build_chat_eval --check    # verifies the frozen file against its hash

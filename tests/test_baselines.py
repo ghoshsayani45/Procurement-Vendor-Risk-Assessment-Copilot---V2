@@ -1,4 +1,4 @@
-"""Steps 1.6-1.8 guards: the harness runs end to end offline (mock model), the failure classifier labels correctly,
+"""the harness runs end to end offline (mock model), the failure classifier labels correctly,
 and the retrieval baseline is reproducible."""
 import json
 from pathlib import Path

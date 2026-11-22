@@ -1,4 +1,4 @@
-"""Week 3 (3.1, 3.5): the LangGraph agent and its entry point.
+"""the LangGraph agent and its entry point.
 
     from app.agents.graph import run_agent
     state = run_agent({"request_kind": "FULL_REVIEW", "vendor_ids": ["V003"], "question": "Renewal review"})

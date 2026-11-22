@@ -1,4 +1,4 @@
-# Ask the Copilot: grounded chat assistant (D45)
+# Ask the Copilot: grounded chat assistant 
 
 A chat view (Streamlit, "View → Ask the Copilot") and API route (`POST /chat`) that answers **any question about the copilot system** from the system's own records: a single vendor, the whole vendor portfolio, the internal policies and regulations, and how the copilot was designed, built and evaluated. Unlike the review chat (`POST /reviews/{id}/messages`), a session is not tied to one review or one vendor.
 

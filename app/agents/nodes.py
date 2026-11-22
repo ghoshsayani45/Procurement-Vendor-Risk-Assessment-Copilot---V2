@@ -1,4 +1,4 @@
-"""Week 3 (3.1-3.6): the five agent nodes plus finalize.
+"""the five agent nodes plus finalize.
 
   validate  rules first (refusals, vendor resolution, clarify cases), LLM router only for unclear QUESTION requests
   plan      a template with a deterministic default plan; the LLM only fills slots (search queries) for questions

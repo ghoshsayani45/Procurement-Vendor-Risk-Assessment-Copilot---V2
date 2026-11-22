@@ -1,4 +1,4 @@
-"""Week 3 (3.1): the agent's state and plan schemas. Frozen interfaces: the UI, API, safety tests and eval build on these.
+"""the agent's state and plan schemas. Frozen interfaces: the UI, API, safety tests and eval build on these.
 
 ReviewState is a plain dict (LangGraph TypedDict state). Every node reads it and returns the keys it changes.
 The final answer is `state["output"]`: one of the Week 1 output schemas (Report, ComparisonResult, Answer,

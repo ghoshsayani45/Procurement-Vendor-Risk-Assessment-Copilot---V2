@@ -1,4 +1,4 @@
-"""D45: Ask the Copilot. Grounding checks, the knowledge base, routing, portfolio answers against the ground truth, and
+"""Ask the Copilot. Grounding checks, the knowledge base, routing, portfolio answers against the ground truth, and
 the end-to-end chat turn with a scripted fake LLM (no endpoint), including a model that hallucinates on purpose.
 
 The key property: whatever the model writes, an answer that reaches the user contains no number, citation or claim the

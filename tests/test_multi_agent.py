@@ -1,4 +1,4 @@
-"""D44: the multi-agent architecture (AGENT_ARCH=multi) against the same tools, store and safety rules as the single agent.
+"""the multi-agent architecture (AGENT_ARCH=multi) against the same tools, store and safety rules as the single agent.
 
 Uses the scripted FakeLLM from test_agent.py. Checks: the switch picks the graph and the single agent is untouched; the
 supervisor's dispatch and its limits; each specialist's own tools and structured handoff (doc ids limited to what it saw);

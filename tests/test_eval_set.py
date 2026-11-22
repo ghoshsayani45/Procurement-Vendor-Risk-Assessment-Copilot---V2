@@ -1,4 +1,4 @@
-"""Step 1.5 guards: eval_v1 is frozen, well-formed, consistent with the ground truth, and gradable."""
+"""eval_v1 is frozen, well-formed, consistent with the ground truth, and gradable."""
 import csv
 import hashlib
 import json

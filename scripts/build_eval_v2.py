@@ -1,4 +1,4 @@
-"""Week 4 (multi-agent experiment, D44): build and validate eval_v2, a harder held-out set of 45 queries.
+"""(multi-agent experiment): build and validate eval_v2, a harder held-out set of 45 queries.
 
     python -m scripts.build_eval_v2            # writes data/evaluation/eval_v2.jsonl (+ .sha256)
 

@@ -1,4 +1,4 @@
-"""Step 1.4a: render the synthetic internal policy documents of the (fictional) buyer, Indrapath Technologies Ltd.
+"""render the synthetic internal policy documents of the (fictional) buyer, Indrapath Technologies Ltd.
 
 Every threshold is read from app/scoring/rubric.yaml so the policies the copilot cites and the engine that
 scores can never disagree. One older, superseded policy version is included on purpose (version trap).

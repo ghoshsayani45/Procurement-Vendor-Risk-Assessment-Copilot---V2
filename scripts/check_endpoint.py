@@ -1,4 +1,4 @@
-"""Day 0 step 3: check the course endpoint and record what it supports.
+"""check the course endpoint and record what it supports.
 
     python -m scripts.check_endpoint            (run from the project root, .venv active)
     python -m scripts.check_endpoint --settings (only show which settings are loaded; no API calls)

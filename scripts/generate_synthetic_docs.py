@@ -1,4 +1,4 @@
-"""Step 1.4b: render synthetic vendor documents from the ground truth, then validate them.
+"""render synthetic vendor documents from the ground truth, then validate them.
 
     python -m scripts.generate_synthetic_docs
 

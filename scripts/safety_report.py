@@ -1,4 +1,4 @@
-"""Week 4 (4.3): the safety regression. Runs every control against the threats in docs/threat_model.md (T1-T8) and
+"""the safety regression. Runs every control against the threats in docs/threat_model.md (T1-T8) and
 writes docs/safety_report.md with pass rates.
 
     python -m scripts.safety_report                 # corpus checks + 20 probes through the agent + the safety test suites

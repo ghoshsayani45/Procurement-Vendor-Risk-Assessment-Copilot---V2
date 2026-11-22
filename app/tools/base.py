@@ -1,4 +1,4 @@
-"""Tool framework (step 2.5): every tool is a plain Python function with a Pydantic input and output schema.
+"""Tool framework : every tool is a plain Python function with a Pydantic input and output schema.
 
     result = run_tool("compliance_checker", {"vendor_id": "V003"})      # -> app.schemas.ToolResult
     result.ok, result.data, result.error, result.latency_ms

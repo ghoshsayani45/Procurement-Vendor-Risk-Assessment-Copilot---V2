@@ -1,4 +1,4 @@
-"""Step 3.7 (M4): the Streamlit UI renders a real agent review (mock JSON from the API) and the Markdown export."""
+"""the Streamlit UI renders a real agent review (mock JSON from the API) and the Markdown export."""
 import json
 
 import pytest
